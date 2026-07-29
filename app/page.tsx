@@ -48,7 +48,7 @@ export default async function Home() {
         "
         style={{
           backgroundImage:
-            "url('/amicii.png')",
+            "url('/Amicii.png')",
         }}
       >
 
