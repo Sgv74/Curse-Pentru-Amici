@@ -69,7 +69,7 @@ className="
 relative
 z-10
 px-6
-pt-15
+pt-7
 -mt-20
 "
 >
@@ -92,7 +92,8 @@ mt-5
 text-xl
 text-gray-200
 max-w-2xl
-mx-auto
+mx-10
+pt-5
 "
 >
 Strângem aici toate cursele făcute de comunitate,
