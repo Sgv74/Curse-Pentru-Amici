@@ -26,7 +26,7 @@ export default async function PaginaCategorie({
     "street-racing": "Street Racing",
     "rally-racing": "Rally Racing",
     "cross-country": "Cross Country",
-    "drift": "Drift",
+    "troll": "troll",
 
   };
 
