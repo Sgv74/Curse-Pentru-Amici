@@ -1,7 +1,7 @@
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { getRank } from "@/lib/rank";
 import { redirect } from "next/navigation";
-
+import { stergeCursa } from "./actions";
 
 function StatCard({
   icon,
@@ -16,7 +16,6 @@ function StatCard({
 }) {
 
   return (
-
     <div
       className={`
       bg-zinc-900
@@ -25,9 +24,8 @@ function StatCard({
       rounded-2xl
       p-6
       text-center
-      hover:-translate-y-1
       transition
-      duration-300
+      hover:-translate-y-1
       ${color}
       `}
     >
@@ -45,15 +43,12 @@ function StatCard({
       </p>
 
     </div>
-
   );
-
 }
 
 
 
 export default async function ProfilPage(){
-
 
 const supabase =
 await createSupabaseServerClient();
@@ -69,17 +64,16 @@ user
 
 
 if(!user){
-
 redirect("/login");
-
 }
 
 
 
 
-/*
- CURSE USER
-*/
+
+// =======================
+// CURSE USER
+// =======================
 
 const {
 data:curse
@@ -106,8 +100,9 @@ curse?.length ?? 0;
 
 const ids =
 curse?.map(
-(cursa)=>cursa.id
+race=>race.id
 ) ?? [];
+
 
 
 
@@ -138,7 +133,7 @@ votes?.length ?? 0;
 
 
 
-if(votes && votes.length){
+if(votes?.length){
 
 averageRating =
 votes.reduce(
@@ -185,12 +180,15 @@ const progress =
 (totalCurse % 10) * 10;
 
 
+
 const remaining =
 progress===0
 ?
 10
 :
-10-Math.floor(progress/10);
+10 - Math.floor(progress/10);
+
+
 
 
 
@@ -213,7 +211,6 @@ max-w-6xl
 mx-auto
 "
 >
-
 
 
 <h1
@@ -253,7 +250,7 @@ ml-2
 
 
 
-<section
+<div
 className="
 grid
 grid-cols-1
@@ -284,7 +281,7 @@ color="hover:border-yellow-500"
 <StatCard
 icon="❤️"
 value={totalFavorites}
-label="Favorite primite"
+label="Favorite"
 color="hover:border-pink-500"
 />
 
@@ -297,13 +294,15 @@ color="hover:border-cyan-500"
 />
 
 
-</section>
+</div>
 
 
 
 
 
-<section
+
+
+<div
 className="
 bg-zinc-900
 border
@@ -332,9 +331,10 @@ ${rank.color}
 </h2>
 
 
-<p className="text-zinc-300 mt-3 text-lg">
+<p className="mt-3 text-zinc-300">
 🏁 {totalCurse} curse încărcate
 </p>
+
 
 
 <div
@@ -360,12 +360,14 @@ width:`${progress}%`
 </div>
 
 
-<p className="text-zinc-400 text-sm mt-3">
+
+<p className="text-zinc-400 mt-3 text-sm">
 Încă {remaining} curse până la următorul rang.
 </p>
 
 
-</section>
+</div>
+
 
 
 
@@ -392,12 +394,8 @@ mb-8
 "
 >
 
-<h2
-className="
-text-3xl
-font-black
-"
->
+
+<h2 className="text-3xl font-black">
 🏁 Cursele mele
 </h2>
 
@@ -418,6 +416,8 @@ font-bold
 
 
 </div>
+
+
 
 
 
@@ -444,10 +444,10 @@ curse.map((cursa)=>(
 key={cursa.id}
 className="
 bg-zinc-800
-rounded-2xl
-overflow-hidden
 border
 border-zinc-700
+rounded-2xl
+overflow-hidden
 "
 >
 
@@ -467,36 +467,43 @@ object-cover
 <div className="p-6">
 
 
-<h3
-className="
-text-2xl
-font-black
-"
->
+<h3 className="text-2xl font-black">
 {cursa.title}
 </h3>
 
 
-<p className="text-zinc-400 mt-3">
+
+<div className="text-zinc-400 mt-3 space-y-1">
+
+<p>
 🏎️ {cursa.car}
 </p>
 
-
-<p className="text-zinc-400">
+<p>
 🏁 Clasa {cursa.class}
 </p>
 
-
-<p className="text-zinc-400">
-🔑 Cod: {cursa.share_code}
+<p>
+🔑 {cursa.share_code}
 </p>
+
+</div>
+
+
+
+
+<div
+className="
+flex
+gap-3
+mt-6
+"
+>
 
 
 <a
 href={`/cursa/${cursa.id}`}
 className="
-inline-block
-mt-5
 bg-green-600
 px-4
 py-2
@@ -504,8 +511,47 @@ rounded-lg
 font-bold
 "
 >
-Vezi cursa
+Vezi
 </a>
+
+
+
+<a
+href={`/curse/${cursa.id}/edit`}
+className="
+bg-yellow-600
+px-4
+py-2
+rounded-lg
+font-bold
+"
+>
+✏️ Editează
+</a>
+
+
+
+<form
+action={stergeCursa.bind(null,cursa.id)}
+>
+
+<button
+className="
+bg-red-600
+hover:bg-red-500
+px-4
+py-2
+rounded-lg
+font-bold
+"
+>
+🗑️ Șterge
+</button>
+
+</form>
+
+
+</div>
 
 
 </div>
@@ -522,6 +568,7 @@ Vezi cursa
 
 
 )
+
 :
 
 
@@ -541,19 +588,13 @@ text-center
 </div>
 
 
-<h3
-className="
-text-2xl
-font-bold
-mt-4
-"
->
+<h3 className="text-2xl font-bold mt-4">
 Nu ai curse încă
 </h3>
 
 
 <p className="text-zinc-400 mt-3">
-Adaugă prima ta cursă și va apărea aici.
+Adaugă prima ta cursă.
 </p>
 
 
@@ -570,11 +611,8 @@ Adaugă prima ta cursă și va apărea aici.
 
 </div>
 
-
 </main>
 
-
 );
-
 
 }
