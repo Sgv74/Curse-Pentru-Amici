@@ -164,7 +164,7 @@ export default async function Home() {
           />
 
           <Category
-            emoji="💨"
+            emoji="🤡"
             title="Troll"
             link="/categorie/Troll"
           />
