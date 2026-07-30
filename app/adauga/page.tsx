@@ -322,7 +322,7 @@ Categorie
 <option>Street Racing</option>
 <option>Rally</option>
 <option>Cross Country</option>
-<option>troll</option>
+<option>Troll</option>
 
 </select>
 
