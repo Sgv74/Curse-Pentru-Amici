@@ -7,40 +7,26 @@ import { useRouter } from "next/navigation";
 
 export default function AdaugaCursa() {
 
-
   const router = useRouter();
 
 
-
   const [numeCursa,setNumeCursa] = useState("");
-
-  const [imagineCursa,setImagineCursa] =
-    useState<File | null>(null);
-
+  const [imagineCursa,setImagineCursa] = useState<File | null>(null);
   const [codCursa,setCodCursa] = useState("");
-
   const [categorie,setCategorie] = useState("");
-
   const [durata,setDurata] = useState("");
-
   const [masina,setMasina] = useState("");
-
   const [clasa,setClasa] = useState("");
-
   const [scor,setScor] = useState("");
-
   const [descriere,setDescriere] = useState("");
 
   const [mesaj,setMesaj] = useState("");
-
   const [eroare,setEroare] = useState(false);
 
 
 
-
-
   async function publicaCursa(
-    e: React.FormEvent<HTMLFormElement>
+    e:React.FormEvent<HTMLFormElement>
   ){
 
     e.preventDefault();
@@ -51,24 +37,19 @@ export default function AdaugaCursa() {
 
 
 
-    // VERIFICAM USERUL LOGAT
-
     const {
       data:{
         user
       }
-    } =
-    await supabase.auth.getUser();
-
+    } = await supabase.auth.getUser();
 
 
 
     if(!user){
 
       setEroare(true);
-
       setMesaj(
-        "❌ Trebuie să fii logat pentru a publica."
+        "❌ Trebuie să fii logat."
       );
 
       return;
@@ -78,12 +59,9 @@ export default function AdaugaCursa() {
 
 
 
-
-
     if(!imagineCursa){
 
       setEroare(true);
-
       setMesaj(
         "❌ Selectează o imagine."
       );
@@ -94,11 +72,42 @@ export default function AdaugaCursa() {
 
 
 
+    /*
+      VERIFICARE COD UNIC
+    */
+
+
+    const {
+      data:existenta
+    } = await supabase
+      .from("races")
+      .select("id")
+      .eq(
+        "share_code",
+        codCursa.trim()
+      )
+      .single();
+
+
+
+    if(existenta){
+
+      setEroare(true);
+
+      setMesaj(
+        "❌ Acest cod există deja. Alege alt cod."
+      );
+
+      return;
+
+    }
 
 
 
 
-    // UPLOAD IMAGINE
+    /*
+      UPLOAD IMAGINE
+    */
 
 
     const extensie =
@@ -107,12 +116,8 @@ export default function AdaugaCursa() {
       .pop();
 
 
-
     const numeFisier =
       `${Date.now()}.${extensie}`;
-
-
-
 
 
 
@@ -125,9 +130,6 @@ export default function AdaugaCursa() {
       numeFisier,
       imagineCursa
     );
-
-
-
 
 
 
@@ -146,27 +148,21 @@ export default function AdaugaCursa() {
 
 
 
-
-
-
-    const publicUrl =
-    supabase.storage
-    .from("race-images")
-    .getPublicUrl(
-      numeFisier
-    )
-    .data
-    .publicUrl;
-
+    const imagineUrl =
+      supabase.storage
+      .from("race-images")
+      .getPublicUrl(
+        numeFisier
+      )
+      .data
+      .publicUrl;
 
 
 
 
-
-
-
-
-    // SALVARE CURSA CU USER_ID
+    /*
+      SALVARE CURSA
+    */
 
 
     const {
@@ -178,9 +174,10 @@ export default function AdaugaCursa() {
 
       title:numeCursa,
 
-      image_url:publicUrl,
+      image_url:imagineUrl,
 
-      share_code:codCursa,
+      share_code:
+        codCursa.trim(),
 
       category:categorie,
 
@@ -194,23 +191,9 @@ export default function AdaugaCursa() {
 
       description:descriere,
 
-
-      // USER CARE A CREAT CURSA
-
-      user_id:user.id,
-
-
-      // VOTURI INITIALE
-
-      rating:0,
-
-      votes:0,
+      user_id:user.id
 
     });
-
-
-
-
 
 
 
@@ -228,39 +211,9 @@ export default function AdaugaCursa() {
 
 
 
-
-
-
     setMesaj(
       "✅ Cursa a fost publicată!"
     );
-
-
-
-
-
-    // RESET FORMULAR
-
-
-    setNumeCursa("");
-
-    setImagineCursa(null);
-
-    setCodCursa("");
-
-    setCategorie("");
-
-    setDurata("");
-
-    setMasina("");
-
-    setClasa("");
-
-    setScor("");
-
-    setDescriere("");
-
-
 
 
 
@@ -270,7 +223,7 @@ export default function AdaugaCursa() {
 
       router.refresh();
 
-    },1500);
+    },1200);
 
 
 
@@ -279,314 +232,215 @@ export default function AdaugaCursa() {
 
 
 
-
-
-
-
-
   return (
 
-    <main
-      className="
+    <main className="
       min-h-screen
       bg-zinc-950
       text-white
       px-6
       py-12
-      "
-    >
+    ">
 
 
-      <div
-        className="
+      <div className="
         max-w-3xl
         mx-auto
-        "
-      >
+      ">
 
 
-        <h1
-          className="
+        <h1 className="
           text-5xl
           font-extrabold
-          mb-10
           text-center
-          "
-        >
-
+          mb-10
+        ">
           🏁 Adaugă cursă
-
         </h1>
 
 
 
-
-
-
         <form
-
           onSubmit={publicaCursa}
-
           className="
-          bg-zinc-900
-          p-8
-          rounded-2xl
-          border
-          border-zinc-800
-          space-y-5
+            bg-zinc-900
+            border
+            border-zinc-800
+            rounded-2xl
+            p-8
+            space-y-5
           "
-
         >
 
 
 
+<input
+required
+placeholder="Nume cursă"
+value={numeCursa}
+onChange={e=>setNumeCursa(e.target.value)}
+className="w-full bg-zinc-800 p-4 rounded-xl"
+/>
 
 
-          <input
 
-            required
+<input
+required
+type="file"
+accept="image/*"
+onChange={e=>
+setImagineCursa(
+e.target.files?.[0] ?? null
+)}
+className="w-full bg-zinc-800 p-4 rounded-xl"
+/>
 
-            placeholder="Nume cursă"
 
-            value={numeCursa}
 
-            onChange={
-              e=>setNumeCursa(e.target.value)
-            }
+<input
+required
+placeholder="Cod cursă "
+value={codCursa}
+onChange={e=>setCodCursa(e.target.value)}
+className="w-full bg-zinc-800 p-4 rounded-xl"
+/>
 
-            className="
-            w-full
-            bg-zinc-800
-            p-4
-            rounded-xl
-            "
 
-          />
 
+<select
+required
+value={categorie}
+onChange={e=>setCategorie(e.target.value)}
+className="w-full bg-zinc-800 p-4 rounded-xl"
+>
 
+<option value="">
+Categorie
+</option>
 
+<option>Road Racing</option>
+<option>Street Racing</option>
+<option>Rally</option>
+<option>Cross Country</option>
+<option>Drift</option>
 
+</select>
 
 
-          <input
 
-            required
 
-            type="file"
 
-            accept="image/*"
+<input
+required
+placeholder="Durată"
+value={durata}
+onChange={e=>setDurata(e.target.value)}
+className="w-full bg-zinc-800 p-4 rounded-xl"
+/>
 
-            onChange={
-              e=>
-              setImagineCursa(
-                e.target.files?.[0] ?? null
-              )
-            }
 
-            className="
-            w-full
-            bg-zinc-800
-            p-4
-            rounded-xl
-            "
 
-          />
 
 
+<input
+required
+placeholder="Mașină"
+value={masina}
+onChange={e=>setMasina(e.target.value)}
+className="w-full bg-zinc-800 p-4 rounded-xl"
+/>
 
 
 
 
 
-          <input
+<select
+required
+value={clasa}
+onChange={e=>setClasa(e.target.value)}
+className="w-full bg-zinc-800 p-4 rounded-xl"
+>
 
-            required
+<option value="">
+Clasa
+</option>
 
-            placeholder="Cod Cursă"
+<option>🟢D </option>
+<option>🟡C</option>
+<option>🟠B </option>
+<option>🔴A </option>
+<option>🟣S1 </option>
+<option>🔵S2 </option>
+<option>⚫X </option>
 
-            value={codCursa}
+</select>
 
-            onChange={
-              e=>setCodCursa(e.target.value)
-            }
 
-            className="
-            w-full
-            bg-zinc-800
-            p-4
-            rounded-xl
-            "
 
-          />
 
 
+<input
+required
+placeholder="Scor Exact"
+value={scor}
+onChange={e=>setScor(e.target.value)}
+className="w-full bg-zinc-800 p-4 rounded-xl"
+/>
 
 
 
 
 
-          <select
+<textarea
+required
+rows={5}
+placeholder="Descriere"
+value={descriere}
+onChange={e=>setDescriere(e.target.value)}
+className="w-full bg-zinc-800 p-4 rounded-xl"
+/>
 
-            required
 
-            value={categorie}
 
-            onChange={
-              e=>setCategorie(e.target.value)
-            }
 
-            className="
-            w-full
-            bg-zinc-800
-            p-4
-            rounded-xl
-            "
 
-          >
+<button
+className="
+w-full
+bg-green-600
+hover:bg-green-500
+py-4
+rounded-xl
+font-bold
+text-xl
+"
+>
 
-            <option value="">
-              Categoria
-            </option>
+🚀 Publică cursa
 
-            <option>Road Racing</option>
-            <option>Street Racing</option>
-            <option>Rally Racing</option>
-            <option>Cross Country</option>
-            <option>Drift</option>
+</button>
 
 
-          </select>
 
 
+{
+mesaj &&
 
+<p className={`
+text-center
+font-bold
+${eroare
+?
+"text-red-400"
+:
+"text-green-400"}
+`}>
 
+{mesaj}
 
+</p>
 
-
-          <input
-            required
-            placeholder="Durata"
-            value={durata}
-            onChange={e=>setDurata(e.target.value)}
-            className="w-full bg-zinc-800 p-4 rounded-xl"
-          />
-
-
-
-
-          <input
-            required
-            placeholder="Mașină"
-            value={masina}
-            onChange={e=>setMasina(e.target.value)}
-            className="w-full bg-zinc-800 p-4 rounded-xl"
-          />
-
-
-
-
-          <input
-            required
-            placeholder="Clasa"
-            value={clasa}
-            onChange={e=>setClasa(e.target.value)}
-            className="w-full bg-zinc-800 p-4 rounded-xl"
-          />
-
-
-
-
-          <input
-            required
-            placeholder="Scor"
-            value={scor}
-            onChange={e=>setScor(e.target.value)}
-            className="w-full bg-zinc-800 p-4 rounded-xl"
-          />
-
-
-
-
-
-
-          <textarea
-
-            required
-
-            rows={5}
-
-            placeholder="Descriere"
-
-            value={descriere}
-
-            onChange={
-              e=>setDescriere(e.target.value)
-            }
-
-            className="
-            w-full
-            bg-zinc-800
-            p-4
-            rounded-xl
-            "
-
-          />
-
-
-
-
-
-
-          <button
-
-            className="
-            w-full
-            bg-green-600
-            hover:bg-green-700
-            py-4
-            rounded-xl
-            font-bold
-            text-xl
-            "
-
-          >
-
-            🚀 Publică
-
-          </button>
-
-
-
-
-
-
-          {
-            mesaj && (
-
-              <p
-
-                className={`
-                text-center
-                font-bold
-                ${
-                  eroare
-                  ?
-                  "text-red-400"
-                  :
-                  "text-green-400"
-                }
-                `}
-
-              >
-
-                {mesaj}
-
-              </p>
-
-            )
-          }
-
-
+}
 
 
 
