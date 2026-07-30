@@ -35,82 +35,94 @@ export default async function Home() {
 
     <main className="min-h-screen bg-neutral-900 text-white">
 
-      <section
-        className="
-        relative
-        h-[700px]
-        flex
-        items-center
-        justify-center
-        text-center
-        bg-cover
-        bg-center
-        "
-        style={{
-          backgroundImage:
-            "url('/Amicii.png')",
-        }}
-      >
+    <section
+className="
+relative
+h-[650px]
+flex
+items-center
+justify-center
+text-center
+bg-cover
+bg-center
+"
+style={{
+backgroundImage:
+"url('/Amicii.png')",
+}}
+>
 
-        <div
-          className="
-          absolute
-          inset-0
-          bg-black/70
-          "
-        />
+<div
+className="
+absolute
+inset-0
+bg-gradient-to-b
+from-black/50
+via-black/30
+to-black/70
+"
+/>
 
-        <div
-          className="
-          relative
-          z-10
-          px-6
-          "
-        >
 
-          <h1
-            className="
-            text-6xl
-            md:text-7xl
-            font-extrabold
-            "
-          >
-            🏁 Curse Pentru Amici 🏁
-          </h1>
+<div
+className="
+relative
+z-10
+px-6
+pt-15
+-mt-20
+"
+>
 
-          <p
-            className="
-            mt-6
-            text-xl
-            text-gray-300
-            max-w-2xl
-            mx-auto
-            "
-          >
-            Strângem aici toate cursele făcute de comunitate,
-            pentru ca toți să aibă acces rapid la ele.
-          </p>
+<h1
+className="
+text-5xl
+md:text-6xl
+font-extrabold
+drop-shadow-2xl
+"
+>
+🏁 Curse Pentru Amici 🏁
+</h1>
 
-          <Link
-            href="/adauga"
-            className="
-            inline-block
-            mt-8
-            bg-green-600
-            hover:bg-green-700
-            px-8
-            py-4
-            rounded-xl
-            text-xl
-            font-bold
-            "
-          >
-            ➕ Adaugă o cursă
-          </Link>
 
-        </div>
+<p
+className="
+mt-5
+text-xl
+text-gray-200
+max-w-2xl
+mx-auto
+"
+>
+Strângem aici toate cursele făcute de comunitate,
+pentru ca toți să aibă acces rapid la ele.
+</p>
 
-      </section>
+
+<Link
+href="/adauga"
+className="
+inline-block
+mt-8
+bg-green-600
+hover:bg-green-500
+shadow-lg
+shadow-green-500/30
+px-8
+py-4
+rounded-xl
+text-xl
+font-bold
+"
+>
+➕ Adaugă o cursă
+</Link>
+
+
+</div>
+
+</section>
 
       <div
         className="
