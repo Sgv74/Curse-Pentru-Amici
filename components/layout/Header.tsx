@@ -248,7 +248,7 @@ export default function Header() {
 
             <Link
 
-              href="/profile"
+              href="/profil"
 
               className="
               text-green-400

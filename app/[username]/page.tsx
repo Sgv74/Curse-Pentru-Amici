@@ -58,7 +58,49 @@ export default async function PublicProfile({
 
   const totalCurse =
     races?.length ?? 0;
+const ids =
+  races?.map((race) => race.id) ?? [];
 
+let totalReviews = 0;
+let totalFavorites = 0;
+let averageRating = 0;
+
+if (ids.length) {
+
+  const {
+    data: votes,
+  } = await supabase
+    .from("race_votes")
+    .select("rating")
+    .in("race_id", ids);
+
+  totalReviews =
+    votes?.length ?? 0;
+
+  if (votes?.length) {
+
+    averageRating =
+      votes.reduce(
+        (sum, vote) => sum + vote.rating,
+        0
+      ) / votes.length;
+
+  }
+
+  const {
+    count,
+  } = await supabase
+    .from("favorites")
+    .select("*", {
+      count: "exact",
+      head: true,
+    })
+    .in("race_id", ids);
+
+  totalFavorites =
+    count ?? 0;
+
+}
 
 
   const rank =

@@ -67,12 +67,16 @@ if(!user){
 redirect("/login");
 }
 const {
-  data: profile
+  data: profile,
+  error: profileError,
 } = await supabase
-.from("profiles")
-.select("*")
-.eq("id", user.id)
-.single();
+  .from("profiles")
+  .select("*")
+  .eq("id", user.id)
+  .single();
+
+console.log(profile);
+console.log(profileError);
 
 
 
@@ -82,20 +86,17 @@ const {
 // =======================
 
 const {
-data:curse
-}=await supabase
-.from("races")
-.select("*")
-.eq(
-"user_id",
-user.id
-)
-.order(
-"created_at",
-{
-ascending:false
-}
-);
+  data: curse,
+  error: curseError,
+} = await supabase
+  .from("races")
+  .select("*")
+  .eq("user_id", user.id)
+  .order("created_at", {
+    ascending: false,
+  });
+
+console.log(curseError);
 
 
 
