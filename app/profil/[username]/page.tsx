@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { getRank } from "@/lib/rank";
 
+
 export default async function PublicProfile({
   params,
 }: {
@@ -11,10 +12,14 @@ export default async function PublicProfile({
   }>;
 }) {
 
+
   const { username } = await params;
+
 
   const supabase =
     await createSupabaseServerClient();
+
+
 
   // Profil
 
@@ -26,11 +31,16 @@ export default async function PublicProfile({
     .eq("username", username)
     .maybeSingle();
 
+
+
   if (!profile) {
 
     notFound();
 
   }
+
+
+
 
   // Cursele utilizatorului
 
@@ -44,11 +54,18 @@ export default async function PublicProfile({
       ascending: false,
     });
 
+
+
   const totalCurse =
     races?.length ?? 0;
 
+
+
   const rank =
     getRank(totalCurse);
+
+
+
 
   return (
 
@@ -62,18 +79,42 @@ export default async function PublicProfile({
       "
     >
 
+
       <div className="max-w-6xl mx-auto">
+
+
 
         <div
           className="
           bg-zinc-900
           border
           border-zinc-800
-          rounded-2xl
+          rounded-3xl
           p-8
           mb-10
           "
         >
+
+
+
+          <img
+            src={
+              profile.avatar_url ||
+              "/default-avatar.png"
+            }
+            alt="Avatar"
+            className="
+            w-28
+            h-28
+            rounded-full
+            object-cover
+            border-4
+            border-zinc-700
+            mb-6
+            "
+          />
+
+
 
           <h1
             className="
@@ -86,22 +127,56 @@ export default async function PublicProfile({
 
           </h1>
 
+
+
+
+          <p
+            className="
+            text-zinc-400
+            mt-4
+            text-lg
+            "
+          >
+
+            {
+              profile.bio ||
+              "Acest pilot nu are încă o descriere."
+            }
+
+          </p>
+
+
+
+
           <p
             className={`
-            mt-4
+            mt-5
             text-2xl
             font-bold
             ${rank.color}
             `}
           >
+
             {rank.title}
+
           </p>
+
+
+
 
           <p className="mt-3 text-gray-300">
+
             🏁 {totalCurse} curse încărcate
+
           </p>
 
+
+
         </div>
+
+
+
+
 
         <h2
           className="
@@ -115,7 +190,12 @@ export default async function PublicProfile({
 
         </h2>
 
+
+
+
+
         {totalCurse === 0 ? (
+
 
           <div
             className="
@@ -131,7 +211,11 @@ export default async function PublicProfile({
 
           </div>
 
+
+
         ) : (
+
+
 
           <div
             className="
@@ -141,11 +225,18 @@ export default async function PublicProfile({
             "
           >
 
+
+
             {races?.map((cursa) => (
 
+
+
               <Link
+
                 key={cursa.id}
+
                 href={`/cursa/${cursa.id}`}
+
                 className="
                 bg-zinc-900
                 rounded-2xl
@@ -155,19 +246,31 @@ export default async function PublicProfile({
                 hover:border-green-500
                 transition
                 "
+
               >
 
+
+
                 <img
+
                   src={cursa.image_url}
+
                   alt={cursa.title}
+
                   className="
                   w-full
                   h-52
                   object-cover
                   "
+
                 />
 
+
+
+
                 <div className="p-6">
+
+
 
                   <h3
                     className="
@@ -175,36 +278,57 @@ export default async function PublicProfile({
                     font-bold
                     "
                   >
+
                     {cursa.title}
+
                   </h3>
+
+
 
                   <p className="mt-3 text-gray-400">
                     📂 {cursa.category}
                   </p>
 
+
                   <p className="text-gray-400">
                     🚗 {cursa.car}
                   </p>
+
 
                   <p className="text-gray-400">
                     🔥 {cursa.class}
                   </p>
 
+
                   <p className="mt-3">
                     🏆 {cursa.score}
                   </p>
 
+
+
                 </div>
+
+
 
               </Link>
 
+
+
             ))}
+
+
 
           </div>
 
+
+
         )}
 
+
+
       </div>
+
+
 
     </main>
 

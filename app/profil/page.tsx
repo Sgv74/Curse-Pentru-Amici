@@ -66,7 +66,13 @@ user
 if(!user){
 redirect("/login");
 }
-
+const {
+  data: profile
+} = await supabase
+.from("profiles")
+.select("*")
+.eq("id", user.id)
+.single();
 
 
 
@@ -224,27 +230,93 @@ font-black
 
 
 
+<div
+className="
+bg-zinc-900
+border
+border-zinc-800
+rounded-3xl
+p-8
+mb-10
+flex
+items-center
+gap-6
+"
+>
+
+
+<img
+src={
+profile?.avatar_url ||
+"/default-avatar.png"
+}
+alt="Avatar"
+className="
+w-28
+h-28
+rounded-full
+object-cover
+border-4
+border-zinc-700
+"
+/>
+
+
+
+<div>
+
+<h2
+className="
+text-3xl
+font-black
+"
+>
+{profile?.username}
+</h2>
+
+
 <p
 className="
 text-zinc-400
-mt-3
-mb-10
+mt-2
 "
 >
+{
+profile?.bio ||
+"Fără descriere încă."
+}
+</p>
 
-Conectat ca:
 
-<span
+<p
 className="
-text-white
-font-bold
-ml-2
+text-zinc-500
+mt-3
+text-sm
 "
 >
 {user.email}
-</span>
-
 </p>
+
+<a
+href="/profil/edit"
+className="
+bg-green-600
+hover:bg-green-500
+px-5
+py-3
+rounded-xl
+font-bold
+mt-4
+inline-block
+"
+>
+✏️ Editează profil
+</a>
+</div>
+
+
+</div>
 
 
 
