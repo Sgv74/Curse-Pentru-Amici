@@ -212,7 +212,109 @@ if (ids.length) {
 
           </p>
 
+<div
+  className="
+  grid
+  grid-cols-2
+  lg:grid-cols-4
+  gap-5
+  mt-8
+  "
+>
 
+  <div
+    className="
+    bg-zinc-800
+    rounded-2xl
+    p-5
+    text-center
+    "
+  >
+
+    <div className="text-4xl">
+      🏁
+    </div>
+
+    <p className="text-3xl font-black mt-2">
+      {totalCurse}
+    </p>
+
+    <p className="text-zinc-400">
+      Curse
+    </p>
+
+  </div>
+
+  <div
+    className="
+    bg-zinc-800
+    rounded-2xl
+    p-5
+    text-center
+    "
+  >
+
+    <div className="text-4xl">
+      ⭐
+    </div>
+
+    <p className="text-3xl font-black mt-2">
+      {averageRating.toFixed(1)}
+    </p>
+
+    <p className="text-zinc-400">
+      Rating
+    </p>
+
+  </div>
+
+  <div
+    className="
+    bg-zinc-800
+    rounded-2xl
+    p-5
+    text-center
+    "
+  >
+
+    <div className="text-4xl">
+      ❤️
+    </div>
+
+    <p className="text-3xl font-black mt-2">
+      {totalFavorites}
+    </p>
+
+    <p className="text-zinc-400">
+      Favorite
+    </p>
+
+  </div>
+
+  <div
+    className="
+    bg-zinc-800
+    rounded-2xl
+    p-5
+    text-center
+    "
+  >
+
+    <div className="text-4xl">
+      💬
+    </div>
+
+    <p className="text-3xl font-black mt-2">
+      {totalReviews}
+    </p>
+
+    <p className="text-zinc-400">
+      Review-uri
+    </p>
+
+  </div>
+
+</div>
 
         </div>
 
