@@ -191,8 +191,8 @@ export default function RegisterForm() {
 
 
     setMesaj(
-      "✅ Cont creat cu succes! Verifică email-ul."
-    );
+  "🏁 Contul tău a fost creat! Am trimis un email de confirmare. Verifică Inbox-ul (și folderul Spam) pentru a activa contul."
+);
 
 
 
@@ -428,7 +428,7 @@ export default function RegisterForm() {
           ?
           "Se creează..."
           :
-          "Create Account"
+          "Creează cont"
         }
 
 
