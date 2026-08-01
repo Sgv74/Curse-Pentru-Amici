@@ -114,20 +114,13 @@ export default function RegisterForm() {
     // creare cont AUTH
 
 
-    const {
-
-      data,
-
-      error
-
-    } =
-    await supabase.auth.signUp({
-
-      email,
-
-      password,
-
-    });
+   const { data, error } = await supabase.auth.signUp({
+  email,
+  password,
+  options: {
+    emailRedirectTo: "http://https://curseleamicilor.vercel.app//email-confirmed",
+  },
+});
 
 
 
