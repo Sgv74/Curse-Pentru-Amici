@@ -11,22 +11,29 @@ export default function EditProfileForm({
   profile:any;
 }) {
 
+
   const router = useRouter();
+
 
   const [username, setUsername] =
     useState(profile?.username || "");
 
+
   const [bio, setBio] =
     useState(profile?.bio || "");
+
 
   const [avatar, setAvatar] =
     useState<File | null>(null);
 
+
   const [mesaj, setMesaj] =
     useState("");
 
+
   const [loading, setLoading] =
     useState(false);
+
 
 
 
@@ -36,57 +43,24 @@ export default function EditProfileForm({
 
     e.preventDefault();
 
+
     setLoading(true);
     setMesaj("");
 
+
+
     let avatar_url =
-      profile.avatar_url;
+      profile.avatar_url || "";
+
+
 
 
 
     if(avatar){
 
 
-      // șterge poza veche
-
-      if(profile.avatar_url){
-
-        const oldFileName =
-          profile.avatar_url
-            .split("/")
-            .pop()
-            ?.split("?")[0];
-
-
-        if(oldFileName){
-
-          await supabase
-            .storage
-            .from("avatars")
-            .remove([
-              oldFileName
-            ]);
-
-        }
-
-      }
-
-
-
-
-      // upload poza nouă
-
-      const fileExt =
-        avatar.name
-          .split(".")
-          .pop();
-
-
-
       const fileName =
-        `${profile.id}.${fileExt}`;
-
-
+        `${profile.id}.avatar`;
 
 
 
@@ -142,6 +116,8 @@ export default function EditProfileForm({
 
 
 
+
+
     const {
       error
     } =
@@ -179,6 +155,7 @@ export default function EditProfileForm({
 
 
 
+
     setMesaj(
       "✅ Profil actualizat!"
     );
@@ -193,6 +170,7 @@ export default function EditProfileForm({
       router.push("/profil");
 
     },1500);
+
 
 
   }
@@ -220,6 +198,7 @@ export default function EditProfileForm({
     >
 
 
+
       <h1
         className="
         text-3xl
@@ -229,6 +208,7 @@ export default function EditProfileForm({
       >
         ✏️ Editează profil
       </h1>
+
 
 
 
@@ -258,6 +238,8 @@ export default function EditProfileForm({
         "
 
       />
+
+
 
 
 
@@ -295,6 +277,8 @@ export default function EditProfileForm({
 
 
 
+
+
       <label className="text-zinc-400">
         Avatar
       </label>
@@ -324,6 +308,8 @@ export default function EditProfileForm({
 
 
 
+
+
       {
         mesaj &&
 
@@ -332,6 +318,8 @@ export default function EditProfileForm({
         </p>
 
       }
+
+
 
 
 
@@ -361,7 +349,9 @@ export default function EditProfileForm({
           "Salvează profil"
         }
 
+
       </button>
+
 
 
     </form>
