@@ -517,7 +517,7 @@ Vezi
 
 
 <a
-href={`/curse/${cursa.id}/edit`}
+href={`/editeaza/${cursa.id}`}
 className="
 bg-yellow-600
 px-4
