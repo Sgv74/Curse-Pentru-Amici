@@ -196,16 +196,14 @@ export default function Vote({
 
 
       <h2
-        className="
-        text-3xl
-        font-bold
-        mb-5
-        "
-      >
-
-        ⭐ Lasă un review
-
-      </h2>
+className="
+text-3xl
+font-black
+mb-6
+"
+>
+⭐ Lasă un review
+</h2>
 
 
 
