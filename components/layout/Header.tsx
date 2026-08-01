@@ -248,7 +248,7 @@ export default function Header() {
 
             <Link
 
-              href="/profil"
+              href="/profile"
 
               className="
               text-green-400
@@ -366,4 +366,4 @@ export default function Header() {
   );
 
 
-} 
+}  
