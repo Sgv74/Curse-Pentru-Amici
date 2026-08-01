@@ -11,74 +11,60 @@ export default function EditProfileForm({
   profile:any;
 }) {
 
-
   const router = useRouter();
 
-
-  const [username,setUsername] =
+  const [username, setUsername] =
     useState(profile?.username || "");
 
-
-  const [bio,setBio] =
+  const [bio, setBio] =
     useState(profile?.bio || "");
 
-
-  const [avatar,setAvatar] =
+  const [avatar, setAvatar] =
     useState<File | null>(null);
 
-
-  const [mesaj,setMesaj] =
+  const [mesaj, setMesaj] =
     useState("");
 
-
-  const [loading,setLoading] =
+  const [loading, setLoading] =
     useState(false);
 
 
 
-
-
   async function handleSave(
-    e:React.FormEvent<HTMLFormElement>
+    e: React.FormEvent<HTMLFormElement>
   ){
 
     e.preventDefault();
 
-
     setLoading(true);
     setMesaj("");
-
-
 
     let avatar_url =
       profile.avatar_url;
 
 
 
-
-
     if(avatar){
 
 
-      // ștergem avatarul vechi
+      // șterge poza veche
 
       if(profile.avatar_url){
 
-
-        const oldPath =
+        const oldFileName =
           profile.avatar_url
-          .split("/avatars/")
-          [1]
-          ?.split("?")[0];
+            .split("/")
+            .pop()
+            ?.split("?")[0];
 
 
-        if(oldPath){
+        if(oldFileName){
 
           await supabase
             .storage
             .from("avatars")
             .remove([
-              oldPath
+              oldFileName
             ]);
 
         }
@@ -88,11 +74,12 @@ export default function EditProfileForm({
 
 
 
+      // upload poza nouă
 
       const fileExt =
         avatar.name
-        .split(".")
-        .pop();
+          .split(".")
+          .pop();
 
 
 
@@ -110,19 +97,13 @@ export default function EditProfileForm({
         .storage
         .from("avatars")
         .upload(
-
           fileName,
-
           avatar,
-
           {
             upsert:true,
             contentType:avatar.type,
           }
-
         );
-
-
 
 
 
@@ -141,7 +122,6 @@ export default function EditProfileForm({
 
 
 
-
       const {
         data
       } =
@@ -152,15 +132,11 @@ export default function EditProfileForm({
 
 
 
-
-
       avatar_url =
         `${data.publicUrl}?t=${Date.now()}`;
 
 
     }
-
-
 
 
 
@@ -203,14 +179,12 @@ export default function EditProfileForm({
 
 
 
-
     setMesaj(
       "✅ Profil actualizat!"
     );
 
 
     setLoading(false);
-
 
 
 
@@ -221,11 +195,7 @@ export default function EditProfileForm({
     },1500);
 
 
-
   }
-
-
-
 
 
 
@@ -263,7 +233,6 @@ export default function EditProfileForm({
 
 
 
-
       <label className="text-zinc-400">
         Username
       </label>
@@ -289,9 +258,6 @@ export default function EditProfileForm({
         "
 
       />
-
-
-
 
 
 
@@ -329,9 +295,6 @@ export default function EditProfileForm({
 
 
 
-
-
-
       <label className="text-zinc-400">
         Avatar
       </label>
@@ -361,9 +324,6 @@ export default function EditProfileForm({
 
 
 
-
-
-
       {
         mesaj &&
 
@@ -372,9 +332,6 @@ export default function EditProfileForm({
         </p>
 
       }
-
-
-
 
 
 
@@ -405,7 +362,6 @@ export default function EditProfileForm({
         }
 
       </button>
-
 
 
     </form>
