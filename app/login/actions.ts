@@ -16,6 +16,7 @@ export async function loginAction(
 
 
   const {
+    data,
     error
   } =
   await supabase.auth.signInWithPassword({
@@ -35,6 +36,26 @@ export async function loginAction(
     };
 
   }
+
+
+
+  // verificăm dacă emailul a fost confirmat
+
+  if(!data.user?.email_confirmed_at){
+
+
+    await supabase.auth.signOut();
+
+
+    return {
+
+      error:
+      "📩 Trebuie să confirmi emailul înainte să intri în cont."
+
+    };
+
+  }
+
 
 
 

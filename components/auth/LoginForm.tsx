@@ -232,7 +232,14 @@ export default function LoginForm() {
 
       </button>
 
-
+<p className="text-center mt-4">
+  <a
+    href="/forgot-password"
+    className="text-green-400 hover:underline"
+  >
+    Ai uitat parola?
+  </a>
+</p>
 
 
 
