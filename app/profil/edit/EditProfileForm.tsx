@@ -56,15 +56,50 @@ export default function EditProfileForm({
 
 
 
+
     if(avatar){
 
 
+      // ștergem avatarul vechi
+
+      if(profile.avatar_url){
+
+
+        const oldPath =
+          profile.avatar_url
+          .split("/avatars/")
+          [1]
+          ?.split("?")[0];
+
+
+        if(oldPath){
+
+          await supabase
+            .storage
+            .from("avatars")
+            .remove([
+              oldPath
+            ]);
+
+        }
+
+      }
+
+
+
+
+
       const fileExt =
-        avatar.name.split(".").pop();
+        avatar.name
+        .split(".")
+        .pop();
+
 
 
       const fileName =
         `${profile.id}.${fileExt}`;
+
+
 
 
 
@@ -75,12 +110,19 @@ export default function EditProfileForm({
         .storage
         .from("avatars")
         .upload(
+
           fileName,
+
           avatar,
+
           {
             upsert:true,
+            contentType:avatar.type,
           }
+
         );
+
+
 
 
 
@@ -98,6 +140,8 @@ export default function EditProfileForm({
 
 
 
+
+
       const {
         data
       } =
@@ -108,10 +152,15 @@ export default function EditProfileForm({
 
 
 
+
+
       avatar_url =
-        data.publicUrl;
+        `${data.publicUrl}?t=${Date.now()}`;
+
 
     }
+
+
 
 
 
@@ -139,6 +188,7 @@ export default function EditProfileForm({
 
 
 
+
     if(error){
 
       setMesaj(
@@ -153,12 +203,14 @@ export default function EditProfileForm({
 
 
 
+
     setMesaj(
       "✅ Profil actualizat!"
     );
 
 
     setLoading(false);
+
 
 
 
@@ -171,6 +223,7 @@ export default function EditProfileForm({
 
 
   }
+
 
 
 
@@ -195,7 +248,6 @@ export default function EditProfileForm({
       "
 
     >
-
 
 
       <h1
@@ -237,6 +289,7 @@ export default function EditProfileForm({
         "
 
       />
+
 
 
 
@@ -315,12 +368,11 @@ export default function EditProfileForm({
         mesaj &&
 
         <p className="text-green-400 mb-4">
-
           {mesaj}
-
         </p>
 
       }
+
 
 
 
@@ -351,7 +403,6 @@ export default function EditProfileForm({
           :
           "Salvează profil"
         }
-
 
       </button>
 

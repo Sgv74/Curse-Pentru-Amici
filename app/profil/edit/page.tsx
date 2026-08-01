@@ -1,6 +1,6 @@
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { redirect } from "next/navigation";
-import EditProfileForm from "./EditProfileForm";
+import EditProfileForm from "@/app/profil/edit/EditProfileForm";
 
 
 export default async function EditProfilePage() {
