@@ -1,34 +1,41 @@
 type Props = {
-  description:string;
+  description?: string | null;
 };
 
 
 export default function RaceDescription({
+
   description,
-}:Props){
+
+}: Props) {
 
 
   return (
 
     <section
+
       className="
-      mt-10
-      bg-zinc-900
+      rounded-3xl
+      bg-surface
       border
-      border-zinc-800
-      rounded-2xl
+      border-white/10
       p-6
+      md:p-8
       "
+
     >
 
 
 
       <h2
+
         className="
         text-2xl
+        md:text-3xl
         font-black
-        mb-5
+        mb-6
         "
+
       >
 
         📝 Descriere cursă
@@ -38,33 +45,49 @@ export default function RaceDescription({
 
 
 
+
       <div
+
         className="
-        bg-black
-        rounded-xl
-        p-5
+        rounded-2xl
+        bg-background/60
+        border
+        border-white/10
+        p-6
         "
+
       >
 
 
+
         <p
+
           className="
           text-zinc-300
           leading-8
           text-lg
           whitespace-pre-wrap
           "
+
         >
 
           {
-            description ||
-            "Autorul nu a adăugat o descriere."
+
+            description?.trim()
+
+            ||
+
+            "Autorul nu a adăugat încă o descriere pentru această cursă."
+
           }
+
 
         </p>
 
 
+
       </div>
+
 
 
 

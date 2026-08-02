@@ -1,159 +1,302 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-type Race = {
-  id: number;
-  title: string;
-  image_url: string;
-  category: string;
-  car: string;
-  class: string;
-  duration: string;
-  score: string;
-  rating?: number;
+
+type Props = {
+  categories: string[];
+  classes: string[];
 };
 
+
 export default function SearchSection({
-  races,
-}: {
-  races: Race[];
-}) {
+  categories,
+  classes,
+}: Props) {
+
+
+  const router = useRouter();
+
+
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("");
   const [car, setCar] = useState("");
+  const [category, setCategory] = useState("");
   const [raceClass, setRaceClass] = useState("");
 
-  const rezultate = useMemo(() => {
-    return races.filter((race) => {
-      const text = search.toLowerCase();
 
-      const matchSearch =
-        search === "" ||
-        race.title.toLowerCase().includes(text) ||
-        race.car.toLowerCase().includes(text) ||
-        race.category.toLowerCase().includes(text) ||
-        race.class.toLowerCase().includes(text) ||
-        race.duration.toLowerCase().includes(text) ||
-        race.score.toLowerCase().includes(text);
 
-      const matchCategory =
-        category === "" || race.category === category;
+  function cauta() {
 
-      const matchCar =
-        car === "" ||
-        race.car.toLowerCase().includes(car.toLowerCase());
 
-      const matchClass =
-        raceClass === "" || race.class === raceClass;
+    const params = new URLSearchParams();
 
-      return (
-        matchSearch &&
-        matchCategory &&
-        matchCar &&
-        matchClass
+
+
+    if(search.trim()) {
+
+      params.set(
+        "search",
+        search.trim()
       );
-    });
-  }, [search, category, car, raceClass, races]);
 
-  const categorii = [...new Set(races.map((r) => r.category))];
-  const clase = [...new Set(races.map((r) => r.class))];
+    }
+
+
+
+    if(car.trim()) {
+
+      params.set(
+        "car",
+        car.trim()
+      );
+
+    }
+
+
+
+    if(category) {
+
+      params.set(
+        "category",
+        category
+      );
+
+    }
+
+
+
+    if(raceClass) {
+
+      params.set(
+        "class",
+        raceClass
+      );
+
+    }
+
+
+
+
+    router.push(
+      `/cauta?${params.toString()}`
+    );
+
+
+  }
+
+
+
+
 
   return (
-    <>
-      <div className="bg-zinc-900 rounded-2xl p-6 border border-zinc-800 mt-10">
+
+    <section
+      className="
+      bg-surface
+      border
+      border-white/10
+      rounded-3xl
+      p-8
+      "
+    >
+
+
+
+      <div
+        className="
+        grid
+        lg:grid-cols-4
+        gap-5
+        "
+      >
+
+
 
         <input
+
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="🔍 Caută după nume, mașină, categorie, clasă..."
-          className="w-full bg-black rounded-xl p-4 mb-5"
+
+          onChange={(e)=>
+            setSearch(e.target.value)
+          }
+
+          placeholder="🔍 Nume cursă"
+
+          className="
+          bg-black
+          border
+          border-white/10
+          rounded-xl
+          px-5
+          py-4
+          outline-none
+          focus:border-primary
+          "
+
         />
 
-        <div className="grid md:grid-cols-3 gap-4">
 
-          <input
-            placeholder="🚗 Mașină"
-            value={car}
-            onChange={(e) => setCar(e.target.value)}
-            className="bg-black rounded-xl p-4"
-          />
 
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="bg-black rounded-xl p-4"
-          >
-            <option value="">Toate categoriile</option>
 
-            {categorii.map((cat) => (
-              <option key={cat}>{cat}</option>
-            ))}
-          </select>
 
-          <select
-            value={raceClass}
-            onChange={(e) => setRaceClass(e.target.value)}
-            className="bg-black rounded-xl p-4"
-          >
-            <option value="">Toate clasele</option>
+        <input
 
-            {clase.map((c) => (
-              <option key={c}>{c}</option>
-            ))}
-          </select>
+          value={car}
 
-        </div>
+          onChange={(e)=>
+            setCar(e.target.value)
+          }
+
+          placeholder="🚗 Mașină"
+
+          className="
+          bg-black
+          border
+          border-white/10
+          rounded-xl
+          px-5
+          py-4
+          outline-none
+          focus:border-primary
+          "
+
+        />
+
+
+
+
+
+
+        <select
+
+          value={category}
+
+          onChange={(e)=>
+            setCategory(e.target.value)
+          }
+
+          className="
+          bg-black
+          border
+          border-white/10
+          rounded-xl
+          px-5
+          py-4
+          "
+
+        >
+
+          <option value="">
+            📂 Toate categoriile
+          </option>
+
+
+          {
+            categories.map((cat)=>(
+
+              <option
+                key={cat}
+                value={cat}
+              >
+                {cat}
+              </option>
+
+            ))
+          }
+
+
+        </select>
+
+
+
+
+
+
+
+        <select
+
+          value={raceClass}
+
+          onChange={(e)=>
+            setRaceClass(e.target.value)
+          }
+
+          className="
+          bg-black
+          border
+          border-white/10
+          rounded-xl
+          px-5
+          py-4
+          "
+
+        >
+
+
+          <option value="">
+            🔥 Toate clasele
+          </option>
+
+
+
+          {
+            classes.map((c)=>(
+
+              <option
+                key={c}
+                value={c}
+              >
+                {c}
+              </option>
+
+            ))
+          }
+
+
+
+        </select>
+
+
+
+
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6 mt-8">
 
-        {rezultate.map((race) => (
 
-          <Link
-            key={race.id}
-            href={`/cursa/${race.id}`}
-            className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 hover:border-green-500 transition"
-          >
-            <img
-              src={race.image_url}
-              className="w-full h-52 object-cover"
-            />
 
-            <div className="p-5">
 
-              <h2 className="text-2xl font-bold">
-                {race.title}
-              </h2>
 
-              <p className="mt-2">
-                📂 {race.category}
-              </p>
+      <button
 
-              <p>
-                🚗 {race.car}
-              </p>
+        onClick={cauta}
 
-              <p>
-                🔥 {race.class}
-              </p>
+        className="
+        mt-8
+        w-full
+        bg-primary
+        text-black
+        py-4
+        rounded-xl
+        font-black
+        text-lg
+        hover:bg-primary-hover
+        transition
+        "
 
-              <p>
-                ⏱️ {race.duration}
-              </p>
+      >
 
-              <p>
-                🏆 {race.score}
-              </p>
+        🔎 Caută curse
 
-            </div>
+      </button>
 
-          </Link>
 
-        ))}
 
-      </div>
-    </>
+
+
+    </section>
+
+
   );
+
 }

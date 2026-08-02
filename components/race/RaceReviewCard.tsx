@@ -1,74 +1,126 @@
+import Image from "next/image";
 import Link from "next/link";
 
 
 type Props = {
+
   username:string;
+
   avatar:string | null;
+
   rating:number;
+
   comment:string | null;
+
   createdAt:string;
+
 };
 
 
+
 export default function RaceReviewCard({
+
   username,
+
   avatar,
+
   rating,
+
   comment,
+
   createdAt,
+
 }:Props){
+
+
+
+  const ratingSafe = Math.min(
+    Math.max(
+      Number(rating) || 0,
+      0
+    ),
+    5
+  );
+
 
 
   return (
 
-    <div
+    <article
+
       className="
-      bg-black
+      rounded-3xl
+      bg-background
       border
-      border-zinc-800
-      rounded-2xl
+      border-white/10
       p-6
+      hover:border-primary/30
+      transition
       "
+
     >
 
 
 
+
+
       <div
+
         className="
         flex
-        items-center
+        flex-col
+        md:flex-row
+        md:items-center
         justify-between
-        gap-4
+        gap-5
         "
+
       >
 
 
 
+
+
         <div
+
           className="
           flex
           items-center
           gap-4
           "
+
         >
 
 
 
-          <img
+
+
+          <Image
+
             src={
               avatar ||
               "/default-avatar.png"
             }
+
             alt={username}
+
+            width={56}
+
+            height={56}
+
             className="
-            w-12
-            h-12
+            w-14
+            h-14
             rounded-full
             object-cover
             border
-            border-zinc-700
+            border-primary/40
             "
+
           />
+
+
+
 
 
 
@@ -76,13 +128,18 @@ export default function RaceReviewCard({
           <div>
 
 
+
             <Link
+
               href={`/${username}`}
+
               className="
               font-black
-              text-green-400
-              hover:text-green-300
+              text-accent
+              hover:text-primary
+              transition
               "
+
             >
 
               {username}
@@ -91,12 +148,17 @@ export default function RaceReviewCard({
 
 
 
+
+
+
             <p
+
               className="
               text-sm
-              text-zinc-500
+              text-muted
               mt-1
               "
+
             >
 
               {createdAt}
@@ -104,26 +166,44 @@ export default function RaceReviewCard({
             </p>
 
 
+
+
+
           </div>
 
 
 
+
+
         </div>
+
+
+
 
 
 
 
 
         <div
+
           className="
-          text-yellow-400
-          text-xl
+          px-4
+          py-2
+          rounded-full
+          bg-primary/10
+          border
+          border-primary/20
+          text-primary
+          font-bold
           "
+
         >
 
-          {"⭐".repeat(rating)}
+          {"⭐".repeat(ratingSafe)}
 
         </div>
+
+
 
 
 
@@ -133,29 +213,44 @@ export default function RaceReviewCard({
 
 
 
+
+
+
+
       {
+
         comment &&
 
         <div
+
           className="
-          mt-5
-          bg-zinc-900
-          rounded-xl
-          p-4
+          mt-6
+          rounded-2xl
+          bg-surface
+          border
+          border-white/10
+          p-5
           "
+
         >
 
+
+
           <p
+
             className="
             text-zinc-300
-            leading-7
+            leading-8
             whitespace-pre-wrap
             "
+
           >
 
             {comment}
 
           </p>
+
+
 
         </div>
 
@@ -163,7 +258,10 @@ export default function RaceReviewCard({
 
 
 
-    </div>
+
+
+
+    </article>
 
   );
 

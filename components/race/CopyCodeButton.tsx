@@ -6,33 +6,28 @@ import { useState } from "react";
 export default function CopyCodeButton({
   code,
 }: {
-  code:string;
+  code: string;
 }) {
 
 
-  const [copied,setCopied] = useState(false);
+  const [copied, setCopied] = useState(false);
 
 
 
-  async function copy(){
-
+  async function copy() {
 
     await navigator.clipboard.writeText(code);
-
 
     setCopied(true);
 
 
-
-    setTimeout(()=>{
+    setTimeout(() => {
 
       setCopied(false);
 
-    },1500);
-
+    }, 1500);
 
   }
-
 
 
 
@@ -53,22 +48,35 @@ export default function CopyCodeButton({
 
       aria-label="Copiază codul"
 
-      className="
-      w-12
-      h-12
-      flex
-      items-center
-      justify-center
-      rounded-xl
-      bg-green-600
-      hover:bg-green-500
-      transition
-      text-xl
-      "
+
+      className={`
+        w-14
+        h-14
+        flex
+        items-center
+        justify-center
+        rounded-2xl
+        text-xl
+        font-black
+        transition-all
+        duration-300
+
+        ${
+          copied
+            ? 
+            "bg-accent text-black scale-105"
+            :
+            "bg-primary hover:opacity-90"
+        }
+      `}
 
     >
 
-      {copied ? "✓" : "📋"}
+      {
+        copied
+          ? "✓"
+          : "📋"
+      }
 
 
     </button>

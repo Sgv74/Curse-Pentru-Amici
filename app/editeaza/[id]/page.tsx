@@ -3,456 +3,807 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
+
 
 export default function EditeazaCursa() {
+
 
   const params = useParams();
   const router = useRouter();
 
-  const [loading, setLoading] = useState(true);
 
-  const [numeCursa, setNumeCursa] = useState("");
-  const [imagineCursa, setImagineCursa] = useState<File | null>(null);
-  const [imagineVeche, setImagineVeche] = useState("");
+  const id =
+    Number(params.id);
 
-  const [codCursa, setCodCursa] = useState("");
-  const [categorie, setCategorie] = useState("");
-  const [durata, setDurata] = useState("");
-  const [masina, setMasina] = useState("");
-  const [clasa, setClasa] = useState("");
-  const [scor, setScor] = useState("");
-  const [descriere, setDescriere] = useState("");
 
-  const [mesaj, setMesaj] = useState("");
-  const [eroare, setEroare] = useState(false);
 
-  useEffect(() => {
+  const [loading,setLoading] =
+    useState(true);
 
-    async function incarcaCursa() {
+
+  const [saving,setSaving] =
+    useState(false);
+
+
+
+  const [title,setTitle] =
+    useState("");
+
+  const [mainImage,setMainImage] =
+    useState("");
+
+  const [newMainImage,setNewMainImage] =
+    useState<File|null>(null);
+
+
+
+  const [gallery,setGallery] =
+    useState<string[]>([]);
+
+
+  const [newGallery,setNewGallery] =
+    useState<File[]>([]);
+
+
+
+  const [shareCode,setShareCode] =
+    useState("");
+
+  const [category,setCategory] =
+    useState("");
+
+  const [duration,setDuration] =
+    useState("");
+
+  const [car,setCar] =
+    useState("");
+
+  const [raceClass,setRaceClass] =
+    useState("");
+
+  const [score,setScore] =
+    useState("");
+
+  const [description,setDescription] =
+    useState("");
+
+
+
+  const [message,setMessage] =
+    useState("");
+
+
+
+
+  useEffect(()=>{
+
+
+    async function load(){
+
 
       const {
-        data: {
-          user,
-        },
-      } = await supabase.auth.getUser();
+        data:{
+          user
+        }
+      } =
+      await supabase.auth.getUser();
 
-      if (!user) {
+
+
+      if(!user){
 
         router.push("/login");
-
         return;
 
       }
+
+
 
       const {
         data,
-        error,
-      } = await supabase
-        .from("races")
-        .select("*")
-        .eq("id", params.id)
-        .single();
+        error
+      }
+      =
+      await supabase
+      .from("races")
+      .select("*")
+      .eq("id",id)
+      .single();
 
-      if (error || !data) {
+
+
+      if(error || !data){
 
         router.push("/");
-
         return;
 
       }
 
-      if (data.user_id !== user.id) {
+
+
+      if(data.user_id !== user.id){
 
         router.push("/");
-
         return;
 
       }
 
-      setNumeCursa(data.title);
-      setImagineVeche(data.image_url);
-      setCodCursa(data.share_code);
-      setCategorie(data.category);
-      setDurata(data.duration);
-      setMasina(data.car);
-      setClasa(data.class);
-      setScor(data.score);
-      setDescriere(data.description);
+
+
+      setTitle(data.title ?? "");
+
+      setMainImage(
+        data.image_url ?? ""
+      );
+
+
+      setGallery(
+        Array.isArray(data.gallery)
+        ?
+        data.gallery
+        :
+        []
+      );
+
+
+      setShareCode(
+        data.share_code ?? ""
+      );
+
+      setCategory(
+        data.category ?? ""
+      );
+
+      setDuration(
+        data.duration ?? ""
+      );
+
+      setCar(
+        data.car ?? ""
+      );
+
+      setRaceClass(
+        data.class ?? ""
+      );
+
+      setScore(
+        data.score ?? ""
+      );
+
+      setDescription(
+        data.description ?? ""
+      );
+
+
 
       setLoading(false);
 
+
     }
 
-    incarcaCursa();
 
-  }, [params.id, router]);
-async function salveazaModificarile(
-  e: React.FormEvent<HTMLFormElement>
-) {
 
-  e.preventDefault();
+    load();
 
-  setMesaj("");
-  setEroare(false);
 
-  const {
-    data: {
-      user,
-    },
-  } = await supabase.auth.getUser();
+  },[id,router]);
 
-  if (!user) {
 
-    setMesaj("❌ Trebuie să fii logat.");
-    setEroare(true);
 
-    return;
 
-  }
 
-  /*
-    VERIFICĂ DACĂ SHARE CODE ESTE UNIC
-  */
 
-  const {
-    data: codExistent,
-  } = await supabase
-    .from("races")
-    .select("id")
-    .eq("share_code", codCursa.trim());
 
-  if (
-    codExistent &&
-    codExistent.some(
-      (race) => race.id !== Number(params.id)
-    )
-  ) {
+  async function uploadImage(
+    file:File
+  ){
 
-    setMesaj(
-      "❌ Acest cod există deja."
-    );
 
-    setEroare(true);
+    const ext =
+      file.name.split(".").pop();
 
-    return;
 
-  }
 
-  let imagineFinala = imagineVeche;
+    const filename =
+      `${Date.now()}-${Math.random()
+      .toString(36)
+      .substring(2)}
+      .${ext}`;
 
-  /*
-    UPLOAD IMAGINE NOUĂ (OPȚIONAL)
-  */
 
-  if (imagineCursa) {
-
-    const extensie =
-      imagineCursa.name
-        .split(".")
-        .pop();
-
-    const numeFisier =
-      `${Date.now()}.${extensie}`;
 
     const {
-      error: uploadError,
-    } = await supabase.storage
-      .from("race-images")
-      .upload(
-        numeFisier,
-        imagineCursa
-      );
+      error
+    }
+    =
+    await supabase.storage
+    .from("race-images")
+    .upload(
+      filename,
+      file
+    );
 
-    if (uploadError) {
 
-      setMesaj(uploadError.message);
-      setEroare(true);
 
-      return;
+    if(error){
+
+      throw error;
 
     }
 
-    imagineFinala =
-      supabase.storage
-        .from("race-images")
-        .getPublicUrl(numeFisier)
-        .data
-        .publicUrl;
+
+
+    const {
+      data
+    }
+    =
+    supabase.storage
+    .from("race-images")
+    .getPublicUrl(filename);
+
+
+
+    return data.publicUrl;
+
 
   }
 
-  /*
-    UPDATE CURSĂ
-  */
 
-  const {
-    error,
-  } = await supabase
-    .from("races")
-    .update({
 
-      title: numeCursa,
 
-      image_url: imagineFinala,
 
-      share_code:
-        codCursa.trim(),
 
-      category: categorie,
 
-      duration: durata,
+  function removeGalleryImage(
+    url:string
+  ){
 
-      car: masina,
-
-      class: clasa,
-
-      score: scor,
-
-      description: descriere,
-
-    })
-    .eq("id", params.id);
-
-  if (error) {
-
-    setMesaj(error.message);
-    setEroare(true);
-
-    return;
+    setGallery(
+      gallery.filter(
+        img=>img!==url
+      )
+    );
 
   }
 
-  setMesaj(
-    "✅ Modificările au fost salvate!"
-  );
 
-  setTimeout(() => {
 
-    router.push(`/cursa/${params.id}`);
 
-    router.refresh();
 
-  }, 1200);
 
-}
-if (loading) {
+
+
+
+  async function save(
+    e:React.FormEvent
+  ){
+
+    e.preventDefault();
+
+
+
+    setSaving(true);
+    setMessage("");
+
+
+
+    try{
+
+
+      let finalMain =
+        mainImage;
+
+
+
+      /*
+        SCHIMBĂ POZA PRINCIPALĂ
+      */
+
+
+      if(newMainImage){
+
+        finalMain =
+          await uploadImage(
+            newMainImage
+          );
+
+      }
+
+
+
+
+
+
+
+      let finalGallery =
+        [
+          ...gallery
+        ];
+
+
+
+
+
+      /*
+        ADAUGĂ POZE NOI ÎN GALERIE
+      */
+
+
+      for(
+        const img of newGallery
+      ){
+
+        const url =
+          await uploadImage(img);
+
+
+        finalGallery.push(url);
+
+      }
+
+
+
+
+
+
+
+
+      const {
+        error
+      }
+      =
+      await supabase
+      .from("races")
+      .update({
+
+        title,
+
+        image_url:
+          finalMain,
+
+
+        gallery:
+          finalGallery,
+
+
+        share_code:
+          shareCode.trim(),
+
+
+        category,
+
+        duration,
+
+        car,
+
+        class:
+          raceClass,
+
+
+        score,
+
+        description,
+
+
+      })
+      .eq(
+        "id",
+        id
+      );
+
+
+
+
+
+      if(error){
+
+        throw error;
+
+      }
+
+
+
+      setMessage(
+        "✅ Cursa a fost actualizată!"
+      );
+
+
+
+      setTimeout(()=>{
+
+
+        router.push(
+          `/cursa/${id}`
+        );
+
+
+        router.refresh();
+
+
+      },1000);
+
+
+
+
+    }
+    catch(err:any){
+
+
+      setMessage(
+        "❌ " + err.message
+      );
+
+
+    }
+    finally{
+
+      setSaving(false);
+
+    }
+
+
+  }
+
+
+
+
+
+
+
+
+
+  if(loading){
+
+
+    return (
+
+      <main className="min-h-screen bg-zinc-950 text-white flex items-center justify-center">
+
+        Se încarcă...
+
+      </main>
+
+    );
+
+  }
+
+
+
+
+
+
 
   return (
 
-    <main className="min-h-screen bg-zinc-950 text-white flex items-center justify-center">
 
-      <h1 className="text-3xl font-bold">
-        Se încarcă...
-      </h1>
+<main className="
+min-h-screen
+bg-zinc-950
+text-white
+px-6
+py-12
+">
 
-    </main>
 
-  );
+<div className="
+max-w-4xl
+mx-auto
+">
+
+
+<h1 className="
+text-5xl
+font-black
+mb-10
+">
+
+✏️ Editează cursa
+
+</h1>
+
+
+
+
+
+<form
+onSubmit={save}
+className="
+bg-zinc-900
+border
+border-white/10
+rounded-3xl
+p-8
+space-y-6
+"
+>
+
+
+
+
+
+<input
+value={title}
+onChange={
+e=>setTitle(e.target.value)
+}
+placeholder="Titlu"
+className="input"
+/>
+
+
+
+
+
+<div>
+
+<h3 className="font-bold mb-3">
+Imagine principală
+</h3>
+
+
+<Image
+src={mainImage}
+alt=""
+width={900}
+height={500}
+className="
+rounded-2xl
+w-full
+h-72
+object-cover
+"
+/>
+
+
+<input
+type="file"
+accept="image/*"
+onChange={
+e=>
+setNewMainImage(
+e.target.files?.[0] ?? null
+)
+}
+className="mt-4"
+/>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div>
+
+<h3 className="font-bold mb-3">
+Galerie existentă
+</h3>
+
+
+
+<div className="
+grid
+grid-cols-2
+md:grid-cols-4
+gap-4
+">
+
+
+{
+gallery.map(img=>(
+
+<div
+key={img}
+className="relative"
+>
+
+
+<Image
+src={img}
+alt=""
+width={300}
+height={200}
+className="
+rounded-xl
+h-32
+w-full
+object-cover
+"
+/>
+
+
+<button
+type="button"
+onClick={()=>
+removeGalleryImage(img)
+}
+className="
+absolute
+top-2
+right-2
+bg-red-600
+rounded-full
+px-3
+"
+>
+✕
+</button>
+
+
+</div>
+
+))
 
 }
 
-return (
 
-  <main
-    className="
-    min-h-screen
-    bg-zinc-950
-    text-white
-    px-6
-    py-12
-    "
-  >
+</div>
 
-    <div
-      className="
-      max-w-3xl
-      mx-auto
-      "
-    >
 
-      <h1
-        className="
-        text-5xl
-        font-extrabold
-        text-center
-        mb-10
-        "
-      >
-        ✏️ Editează cursa
-      </h1>
+</div>
 
-      <form
-        onSubmit={salveazaModificarile}
-        className="
-        bg-zinc-900
-        border
-        border-zinc-800
-        rounded-2xl
-        p-8
-        space-y-5
-        "
-      >
 
-        <input
-          required
-          placeholder="Nume cursă"
-          value={numeCursa}
-          onChange={(e) => setNumeCursa(e.target.value)}
-          className="w-full bg-zinc-800 p-4 rounded-xl"
-        />
 
-        <div>
 
-          <p className="mb-3 text-zinc-400">
-            Imagine actuală
-          </p>
 
-          <img
-            src={imagineVeche}
-            alt={numeCursa}
-            className="
-            w-full
-            h-72
-            object-cover
-            rounded-xl
-            border
-            border-zinc-700
-            "
-          />
 
-        </div>
 
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) =>
-            setImagineCursa(
-              e.target.files?.[0] ?? null
-            )
-          }
-          className="w-full bg-zinc-800 p-4 rounded-xl"
-        />
+<input
+type="file"
+multiple
+accept="image/*"
+onChange={
+e=>
+setNewGallery(
+Array.from(
+e.target.files ?? []
+)
+)
+}
+className="block"
+/>
 
-        <input
-          required
-          placeholder="Cod cursă"
-          value={codCursa}
-          onChange={(e) => setCodCursa(e.target.value)}
-          className="w-full bg-zinc-800 p-4 rounded-xl"
-        />
 
-        <select
-          required
-          value={categorie}
-          onChange={(e) => setCategorie(e.target.value)}
-          className="w-full bg-zinc-800 p-4 rounded-xl"
-        >
 
-          <option value="">
-            Categorie
-          </option>
 
-          <option>Road Racing</option>
-          <option>Street Racing</option>
-          <option>Rally</option>
-          <option>Cross Country</option>
-          <option>Troll</option>
 
-        </select>
 
-        <input
-          required
-          placeholder="Durată"
-          value={durata}
-          onChange={(e) => setDurata(e.target.value)}
-          className="w-full bg-zinc-800 p-4 rounded-xl"
-        />
 
-        <input
-          required
-          placeholder="Mașină"
-          value={masina}
-          onChange={(e) => setMasina(e.target.value)}
-          className="w-full bg-zinc-800 p-4 rounded-xl"
-        />
 
-        <select
-          required
-          value={clasa}
-          onChange={(e) => setClasa(e.target.value)}
-          className="w-full bg-zinc-800 p-4 rounded-xl"
-        >
 
-          <option value="">
-            Clasa
-          </option>
+<input
+value={shareCode}
+onChange={
+e=>setShareCode(e.target.value)
+}
+placeholder="Cod"
+className="input"
+/>
 
-          <option>🟢D</option>
-          <option>🟡C</option>
-          <option>🟠B</option>
-          <option>🔴A</option>
-          <option>🟣S1</option>
-          <option>🔵S2</option>
-          <option>⚫X</option>
 
-        </select>
 
-        <input
-          required
-          placeholder="Scor Exact"
-          value={scor}
-          onChange={(e) => setScor(e.target.value)}
-          className="w-full bg-zinc-800 p-4 rounded-xl"
-        />
+<input
+value={category}
+onChange={
+e=>setCategory(e.target.value)
+}
+placeholder="Categorie"
+className="input"
+/>
 
-        <textarea
-          required
-          rows={6}
-          placeholder="Descriere"
-          value={descriere}
-          onChange={(e) => setDescriere(e.target.value)}
-          className="w-full bg-zinc-800 p-4 rounded-xl"
-        />
 
-        <button
-          className="
-          w-full
-          bg-yellow-600
-          hover:bg-yellow-500
-          transition
-          py-4
-          rounded-xl
-          font-bold
-          text-xl
-          "
-        >
-          💾 Salvează modificările
-        </button>
 
-        {mesaj && (
+<input
+value={duration}
+onChange={
+e=>setDuration(e.target.value)
+}
+placeholder="Durată"
+className="input"
+/>
 
-          <p
-            className={`
-            text-center
-            font-bold
-            ${
-              eroare
-                ? "text-red-400"
-                : "text-green-400"
-            }
-            `}
-          >
-            {mesaj}
-          </p>
 
-        )}
 
-      </form>
+<input
+value={car}
+onChange={
+e=>setCar(e.target.value)
+}
+placeholder="Mașină"
+className="input"
+/>
 
-    </div>
 
-  </main>
 
-);
+<input
+value={raceClass}
+onChange={
+e=>setRaceClass(e.target.value)
+}
+placeholder="Clasă"
+className="input"
+/>
+
+
+
+<input
+value={score}
+onChange={
+e=>setScore(e.target.value)
+}
+placeholder="Scor"
+className="input"
+/>
+
+
+
+
+<textarea
+value={description}
+onChange={
+e=>setDescription(e.target.value)
+}
+rows={6}
+placeholder="Descriere"
+className="input"
+/>
+
+
+
+
+
+<button
+disabled={saving}
+className="
+w-full
+bg-yellow-500
+text-black
+font-black
+py-4
+rounded-2xl
+text-xl
+"
+>
+
+{
+saving
+?
+"Se salvează..."
+:
+"💾 Salvează"
+}
+
+
+</button>
+
+
+
+
+{
+message &&
+
+<p className="font-bold">
+{message}
+</p>
+
+}
+
+
+
+</form>
+
+
+</div>
+
+
+</main>
+
+
+  );
 
 }

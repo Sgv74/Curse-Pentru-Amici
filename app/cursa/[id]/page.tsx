@@ -6,7 +6,7 @@ import RaceDetails from "@/components/race/RaceDetails";
 import RaceDescription from "@/components/race/RaceDescription";
 import RaceReviews from "@/components/race/RaceReviews";
 import RaceSuggestions from "@/components/race/RaceSuggestions";
-import Vote from "../../../components/Vote";
+import Vote from "@/components/Vote";
 
 
 export default async function CursaDetalii({
@@ -17,22 +17,30 @@ export default async function CursaDetalii({
   }>;
 }) {
 
+
   const { id } = await params;
 
-  const idCursa = Number(id);
+
+  const raceId = Number(id);
 
 
-  if (isNaN(idCursa)) {
+
+  if (Number.isNaN(raceId)) {
 
     return (
       <main className="min-h-screen bg-zinc-950 text-white flex items-center justify-center">
+
         <h1 className="text-4xl font-black">
           ❌ ID invalid
         </h1>
+
       </main>
     );
 
   }
+
+
+
 
 
   const supabase =
@@ -40,10 +48,10 @@ export default async function CursaDetalii({
 
 
 
-  // CURSA
+
 
   const {
-    data:cursa,
+    data: race,
     error
   } =
   await supabase
@@ -51,15 +59,18 @@ export default async function CursaDetalii({
     .select("*")
     .eq(
       "id",
-      idCursa
+      raceId
     )
     .single();
 
 
 
-  if(error || !cursa){
+
+
+  if(error || !race){
 
     return (
+
       <main className="min-h-screen bg-zinc-950 text-white flex items-center justify-center">
 
         <h1 className="text-4xl font-black">
@@ -67,6 +78,7 @@ export default async function CursaDetalii({
         </h1>
 
       </main>
+
     );
 
   }
@@ -74,7 +86,44 @@ export default async function CursaDetalii({
 
 
 
-  // USER LOGAT
+
+
+
+  /*
+    GALERIE
+
+    image_url = imagine principala
+    gallery = jsonb array
+
+  */
+
+
+  const gallery:string[] = Array.from(
+    new Set(
+
+      [
+        race.image_url,
+
+        ...(Array.isArray(race.gallery)
+          ? race.gallery
+          : [])
+
+      ]
+
+      .filter(
+        Boolean
+      )
+
+    )
+  );
+
+
+
+
+
+
+
+
 
   const {
     data:{
@@ -87,20 +136,30 @@ export default async function CursaDetalii({
 
 
 
-  // AUTOR CURSĂ
+
+
+
+
+  /*
+    AUTOR
+  */
+
 
   const {
-    data:autor
-  } =
+    data:author
+  }
+  =
   await supabase
     .from("profiles")
-    .select(`
+    .select(
+      `
       username,
       avatar_url
-    `)
+      `
+    )
     .eq(
       "id",
-      cursa.user_id
+      race.user_id
     )
     .maybeSingle();
 
@@ -110,94 +169,37 @@ export default async function CursaDetalii({
 
 
 
-  // VIEW UNIC USER
+
+
+  /*
+    VOT USER
+  */
+
+
+  let initialRating:number|null = null;
+
+  let initialComment = "";
+
 
 
   if(user){
 
 
     const {
-      data:viewExist
-    } =
-    await supabase
-      .from("race_views")
-      .select("id")
-      .eq(
-        "race_id",
-        idCursa
-      )
-      .eq(
-        "user_id",
-        user.id
-      )
-      .maybeSingle();
-
-
-
-    if(!viewExist){
-
-
-      await supabase
-        .from("race_views")
-        .insert({
-
-          race_id:idCursa,
-
-          user_id:user.id
-
-        });
-
-
-
-      await supabase
-        .from("races")
-        .update({
-
-          views:
-          (cursa.views ?? 0) + 1
-
-        })
-        .eq(
-          "id",
-          idCursa
-        );
-
-
+      data:vote
     }
-
-
-  }
-
-
-
-
-
-
-
-  // VOT USER
-
-
-  let votInitial:number | null = null;
-
-  let comentariuInitial = "";
-
-
-
-  if(user){
-
-
-    const {
-      data:votUser
-    } =
+    =
     await supabase
       .from("race_votes")
-      .select(`
+      .select(
+        `
         rating,
         comment
-      `)
+        `
+      )
       .eq(
         "race_id",
-        idCursa
+        raceId
       )
       .eq(
         "user_id",
@@ -207,12 +209,13 @@ export default async function CursaDetalii({
 
 
 
-    votInitial =
-      votUser?.rating ?? null;
+    initialRating =
+      vote?.rating ?? null;
 
 
-    comentariuInitial =
-      votUser?.comment ?? "";
+
+    initialComment =
+      vote?.comment ?? "";
 
 
   }
@@ -223,12 +226,17 @@ export default async function CursaDetalii({
 
 
 
-  // FAVORITE TOTAL
+
+
+  /*
+    FAVORITE TOTAL
+  */
 
 
   const {
     count:favorites
-  } =
+  }
+  =
   await supabase
     .from("favorites")
     .select(
@@ -240,7 +248,7 @@ export default async function CursaDetalii({
     )
     .eq(
       "race_id",
-      idCursa
+      raceId
     );
 
 
@@ -251,126 +259,11 @@ export default async function CursaDetalii({
 
 
 
-  // REVIEWS
 
 
-  const {
-    data:reviews
-  } =
-  await supabase
-    .from("race_votes")
-    .select(`
-      rating,
-      comment,
-      created_at,
-      user_id
-    `)
-    .eq(
-      "race_id",
-      idCursa
-    )
-    .order(
-      "created_at",
-      {
-        ascending:false
-      }
-    );
-
-
-
-
-
-
-  const reviewsWithProfiles =
-  await Promise.all(
-
-    (reviews ?? []).map(
-      async(review)=>{
-
-
-        const {
-          data:profil
-        } =
-        await supabase
-          .from("profiles")
-          .select(`
-            username,
-            avatar_url
-          `)
-          .eq(
-            "id",
-            review.user_id
-          )
-          .maybeSingle();
-
-
-
-        return {
-
-          ...review,
-
-          profiles:profil
-
-        };
-
-
-      }
-
-    )
-
-  );
-
-
-
-
-
-
-
-
-  // RATING GENERAL
-
-
-  const totalReviews =
-    reviews?.length ?? 0;
-
-
-
-  const rating =
-    totalReviews > 0
-
-    ?
-
-    (
-      reviews!.reduce(
-        (
-          total,
-          review
-        ) =>
-        total + review.rating,
-
-        0
-
-      )
-
-      /
-
-      totalReviews
-
-    ).toFixed(1)
-
-    :
-
-    "0.0";
-
-
-
-
-
-
-
-
-
-  // FAVORIT USER
+  /*
+    FAVORITE USER
+  */
 
 
   let isFavorite = false;
@@ -382,13 +275,14 @@ export default async function CursaDetalii({
 
     const {
       data:fav
-    } =
+    }
+    =
     await supabase
       .from("favorites")
       .select("id")
       .eq(
         "race_id",
-        idCursa
+        raceId
       )
       .eq(
         "user_id",
@@ -412,32 +306,86 @@ export default async function CursaDetalii({
 
 
 
-  // SUGESTII
+  /*
+    REVIEWURI
+  */
 
 
   const {
-    data:suggested
+    data:reviews
   }
   =
   await supabase
-    .from("races")
-    .select(`
-      id,
-      title,
-      image_url,
-      category,
-      car,
-      score
-    `)
+    .from("race_votes")
+    .select(
+      `
+      rating,
+      comment,
+      created_at,
+      user_id
+      `
+    )
     .eq(
-      "category",
-      cursa.category
+      "race_id",
+      raceId
     )
-    .neq(
-      "id",
-      idCursa
+    .order(
+      "created_at",
+      {
+        ascending:false
+      }
+    );
+
+
+
+
+
+
+
+
+
+
+  const reviewsWithProfiles =
+  await Promise.all(
+
+    (reviews ?? [])
+    .map(
+      async(review)=>{
+
+
+        const {
+          data:profile
+        }
+        =
+        await supabase
+          .from("profiles")
+          .select(
+            `
+            username,
+            avatar_url
+            `
+          )
+          .eq(
+            "id",
+            review.user_id
+          )
+          .maybeSingle();
+
+
+
+        return {
+
+          ...review,
+
+          profiles:profile
+
+        };
+
+
+      }
     )
-    .limit(4);
+
+  );
 
 
 
@@ -447,7 +395,53 @@ export default async function CursaDetalii({
 
 
 
-  // TOTAL VIEW-URI
+  /*
+    RATING GENERAL
+  */
+
+
+  const rating =
+
+    reviews && reviews.length > 0
+
+    ?
+
+    (
+      reviews.reduce(
+        (
+          total,
+          item
+        ) =>
+        total + item.rating,
+
+        0
+      )
+
+      /
+
+      reviews.length
+
+    )
+    .toFixed(1)
+
+    :
+
+    "0.0";
+
+
+
+
+
+
+
+
+
+
+
+
+  /*
+    VIEW COUNT
+  */
 
 
   const {
@@ -465,8 +459,55 @@ export default async function CursaDetalii({
     )
     .eq(
       "race_id",
-      idCursa
+      raceId
     );
+
+
+
+
+
+
+
+
+
+
+
+
+  /*
+    SUGESTII
+  */
+
+
+  const {
+    data:suggested
+  }
+  =
+  await supabase
+    .from("races")
+    .select(
+      `
+      id,
+      title,
+      image_url,
+      category,
+      car,
+      score
+      `
+    )
+    .eq(
+      "category",
+      race.category
+    )
+    .neq(
+      "id",
+      raceId
+    )
+    .limit(4);
+
+
+
+
+
 
 
 
@@ -480,100 +521,59 @@ export default async function CursaDetalii({
     <main
       className="
       min-h-screen
-      bg-zinc-950
+      bg-background
       text-white
       px-6
-      py-12
+      py-28
       "
     >
 
 
       <div
         className="
-        max-w-5xl
+        max-w-6xl
         mx-auto
-        bg-zinc-900
-        border
-        border-zinc-800
-        rounded-3xl
-        overflow-hidden
         "
       >
 
 
 
-        <RaceHeader
-
-          race={cursa}
-
-          author={
-            autor?.username ??
-            "Necunoscut"
-          }
-
-          rating={rating}
-
-          favorites={
-            favorites ?? 0
-          }
-
-          views={
-            views ?? 0
-          }
-
-          isFavorite={
-            isFavorite
-          }
-
-        />
+        <div
+          className="
+          overflow-hidden
+          rounded-[40px]
+          border
+          border-white/10
+          bg-surface
+          shadow-2xl
+          "
+        >
 
 
 
+          <RaceHeader
 
+            race={race}
 
-        <div className="p-8">
+            gallery={gallery}
 
-
-          <RaceCode
-
-            shareCode={
-              cursa.share_code
+            author={
+              author?.username ??
+              "Necunoscut"
             }
 
-          />
+            rating={rating}
 
-
-
-
-          <RaceDetails
-
-            category={
-              cursa.category
+            favorites={
+              favorites ?? 0
             }
 
-            car={
-              cursa.car
+            views={
+              views ?? 0
             }
 
-            raceClass={
-              cursa.class
-            }
-
-            score={
-              cursa.score
-            }
-
-            duration={
-              cursa.duration
-            }
-
-            createdAt={
-              new Date(
-                cursa.created_at
-              )
-              .toLocaleDateString(
-                "ro-RO"
-              )
+            isFavorite={
+              isFavorite
             }
 
           />
@@ -582,67 +582,156 @@ export default async function CursaDetalii({
 
 
 
-          <RaceDescription
-
-            description={
-              cursa.description
-            }
-
-          />
 
 
+          <div
+            className="
+            p-6
+            md:p-10
+            space-y-10
+            "
+          >
 
 
 
-          <Vote
+            <RaceCode
 
-            raceId={
-              cursa.id
-            }
+              shareCode={
+                race.share_code
+              }
 
-            initialRating={
-              votInitial
-            }
-
-            initialComment={
-              comentariuInitial
-            }
-
-          />
+            />
 
 
 
 
 
-          <RaceReviews
-
-            reviews={
-              reviewsWithProfiles
-            }
-
-          />
 
 
+            <RaceDetails
+
+              category={
+                race.category
+              }
+
+              car={
+                race.car
+              }
+
+              raceClass={
+                race.class
+              }
+
+              score={
+                race.score
+              }
+
+              duration={
+                race.duration
+              }
+
+              createdAt={
+                new Date(
+                  race.created_at
+                )
+                .toLocaleDateString(
+                  "ro-RO"
+                )
+              }
+
+            />
 
 
 
-          <RaceSuggestions
 
-            races={
-              suggested ?? []
-            }
 
-          />
+
+
+
+
+            <RaceDescription
+
+              description={
+                race.description
+              }
+
+            />
+
+
+
+
+
+
+
+
+
+            <Vote
+
+              raceId={
+                race.id
+              }
+
+              initialRating={
+                initialRating
+              }
+
+              initialComment={
+                initialComment
+              }
+
+            />
+
+
+
+
+
+
+
+
+
+
+
+            <RaceReviews
+
+              reviews={
+                reviewsWithProfiles
+              }
+
+            />
+
+
+
+
+
+
+
+
+
+            <RaceSuggestions
+
+              races={
+                suggested ?? []
+              }
+
+            />
+
+
+
+          </div>
+
 
 
         </div>
 
 
+
       </div>
+
 
 
     </main>
 
   );
+
 
 }

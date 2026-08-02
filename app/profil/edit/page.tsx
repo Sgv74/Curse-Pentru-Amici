@@ -38,26 +38,52 @@ export default async function EditProfilePage() {
 
 
 
-  return (
+ return (
 
-    <main
-      className="
-      min-h-screen
-      bg-zinc-950
-      text-white
-      flex
-      items-center
-      justify-center
-      px-6
-      "
-    >
+<main
+className="
+min-h-screen
+bg-background
+text-white
+flex
+items-center
+justify-center
+px-6
+py-20
+relative
+overflow-hidden
+"
+>
 
-      <EditProfileForm
-        profile={profile}
-      />
+<div
+className="
+absolute
+inset-0
+bg-gradient-to-br
+from-secondary/20
+via-transparent
+to-accent/20
+"
+/>
 
-    </main>
 
-  );
+<div
+className="
+relative
+z-10
+w-full
+"
+>
+
+<EditProfileForm
+  profile={profile}
+/>
+
+</div>
+
+
+</main>
+
+);
 
 }

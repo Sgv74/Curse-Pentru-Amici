@@ -1,5 +1,6 @@
 import RegisterForm from "@/components/auth/RegisterForm";
 
+
 export default function RegisterPage() {
 
 
@@ -8,16 +9,27 @@ export default function RegisterPage() {
     <main
       className="
       min-h-screen
-      bg-zinc-950
+      bg-background
       text-white
       flex
       items-center
       justify-center
       px-6
+      py-20
       "
     >
 
-      <RegisterForm />
+      <div
+        className="
+        w-full
+        max-w-md
+        "
+      >
+
+        <RegisterForm />
+
+      </div>
+
 
     </main>
 

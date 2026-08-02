@@ -15,34 +15,41 @@ export default function EditProfileForm({
   const router = useRouter();
 
 
-  const [username, setUsername] =
+  const [username,setUsername] =
     useState(profile?.username || "");
 
 
-  const [bio, setBio] =
+  const [bio,setBio] =
     useState(profile?.bio || "");
 
 
-  const [avatar, setAvatar] =
+  const [avatar,setAvatar] =
     useState<File | null>(null);
 
 
-  const [mesaj, setMesaj] =
+  const [preview,setPreview] =
+    useState(
+      profile?.avatar_url ||
+      "/default-avatar.png"
+    );
+
+
+  const [mesaj,setMesaj] =
     useState("");
 
 
-  const [loading, setLoading] =
+  const [loading,setLoading] =
     useState(false);
 
 
 
 
+
   async function handleSave(
-    e: React.FormEvent<HTMLFormElement>
+    e:React.FormEvent<HTMLFormElement>
   ){
 
     e.preventDefault();
-
 
     setLoading(true);
     setMesaj("");
@@ -51,8 +58,6 @@ export default function EditProfileForm({
 
     let avatar_url =
       profile.avatar_url || "";
-
-
 
 
 
@@ -75,7 +80,7 @@ export default function EditProfileForm({
           avatar,
           {
             upsert:true,
-            contentType:avatar.type,
+            contentType:avatar.type
           }
         );
 
@@ -84,11 +89,11 @@ export default function EditProfileForm({
       if(uploadError){
 
         setMesaj(
-          "Eroare avatar: " + uploadError.message
+          "Eroare avatar: " +
+          uploadError.message
         );
 
         setLoading(false);
-
         return;
 
       }
@@ -109,7 +114,6 @@ export default function EditProfileForm({
       avatar_url =
         `${data.publicUrl}?t=${Date.now()}`;
 
-
     }
 
 
@@ -129,7 +133,7 @@ export default function EditProfileForm({
 
         bio,
 
-        avatar_url,
+        avatar_url
 
       })
       .eq(
@@ -144,15 +148,14 @@ export default function EditProfileForm({
     if(error){
 
       setMesaj(
-        "Eroare: " + error.message
+        "Eroare: " +
+        error.message
       );
 
       setLoading(false);
-
       return;
 
     }
-
 
 
 
@@ -169,7 +172,7 @@ export default function EditProfileForm({
 
       router.push("/profil");
 
-    },1500);
+    },1200);
 
 
 
@@ -179,145 +182,155 @@ export default function EditProfileForm({
 
 
 
+
+
+
   return (
 
-    <form
 
-      onSubmit={handleSave}
+<form
 
-      className="
-      bg-zinc-900
-      border
-      border-zinc-800
-      rounded-3xl
-      p-8
-      w-full
-      max-w-md
-      "
+onSubmit={handleSave}
 
-    >
+className="
+w-full
+max-w-xl
+mx-auto
+bg-surface
+border
+border-white/10
+rounded-[40px]
+p-8
+md:p-10
+shadow-2xl
+"
 
+>
 
 
-      <h1
-        className="
-        text-3xl
-        font-black
-        mb-8
-        "
-      >
-        ✏️ Editează profil
-      </h1>
+<h1
+className="
+text-4xl
+font-black
+text-center
+mb-10
+"
+>
+✏️ Editează profil
+</h1>
 
 
 
 
 
-      <label className="text-zinc-400">
-        Username
-      </label>
 
 
-      <input
+{/* AVATAR */}
 
-        value={username}
+<div
+className="
+flex
+justify-center
+mb-10
+"
+>
 
-        onChange={(e)=>
-          setUsername(e.target.value)
-        }
 
-        className="
-        w-full
-        mt-2
-        mb-6
-        p-4
-        rounded-xl
-        bg-black
-        border
-        border-zinc-700
-        "
+<label
+className="
+relative
+cursor-pointer
+group
+"
+>
 
-      />
 
+<img
 
+src={preview}
 
+alt="Avatar"
 
+className="
+w-36
+h-36
+rounded-full
+object-cover
+border-4
+border-primary
+transition
+group-hover:scale-105
+"
 
+/>
 
-      <label className="text-zinc-400">
-        Descriere
-      </label>
 
 
-      <textarea
+<div
+className="
+absolute
+inset-0
+rounded-full
+bg-black/70
+opacity-0
+group-hover:opacity-100
+transition
+flex
+items-center
+justify-center
+text-white
+font-black
+text-center
+"
+>
 
-        value={bio}
+📷
+<br/>
+Schimbă
 
-        onChange={(e)=>
-          setBio(e.target.value)
-        }
+</div>
 
-        rows={4}
 
-        className="
-        w-full
-        mt-2
-        mb-6
-        p-4
-        rounded-xl
-        bg-black
-        border
-        border-zinc-700
-        "
 
-        placeholder="Spune ceva despre tine..."
+<input
 
-      />
+type="file"
 
+accept="image/*"
 
+className="hidden"
 
+onChange={(e)=>{
 
 
+const file =
+e.target.files?.[0];
 
-      <label className="text-zinc-400">
-        Avatar
-      </label>
 
+if(file){
 
-      <input
+setAvatar(file);
 
-        type="file"
 
-        accept="image/*"
+setPreview(
+URL.createObjectURL(file)
+);
 
-        onChange={(e)=>
-          setAvatar(
-            e.target.files?.[0] || null
-          )
-        }
+}
 
-        className="
-        w-full
-        mt-2
-        mb-6
-        text-sm
-        "
 
-      />
+}}
 
+/>
 
 
 
+</label>
 
 
-      {
-        mesaj &&
+</div>
 
-        <p className="text-green-400 mb-4">
-          {mesaj}
-        </p>
 
-      }
 
 
 
@@ -325,36 +338,153 @@ export default function EditProfileForm({
 
 
 
-      <button
+<label className="text-muted font-bold">
 
-        disabled={loading}
+Username
 
-        className="
-        w-full
-        bg-green-600
-        hover:bg-green-500
-        disabled:opacity-50
-        py-4
-        rounded-xl
-        font-bold
-        "
+</label>
 
-      >
 
-        {
-          loading
-          ?
-          "Se salvează..."
-          :
-          "Salvează profil"
-        }
 
+<input
 
-      </button>
+value={username}
 
+onChange={(e)=>
+setUsername(e.target.value)
+}
 
+className="
+w-full
+mt-2
+mb-6
+p-4
+rounded-xl
+bg-black/50
+border
+border-white/10
+outline-none
+focus:border-primary
+"
 
-    </form>
+/>
+
+
+
+
+
+
+
+
+
+<label className="text-muted font-bold">
+
+Descriere
+
+</label>
+
+
+
+<textarea
+
+value={bio}
+
+onChange={(e)=>
+setBio(e.target.value)
+}
+
+rows={5}
+
+placeholder="Spune ceva despre tine..."
+
+className="
+w-full
+mt-2
+mb-6
+p-4
+rounded-xl
+bg-black/50
+border
+border-white/10
+outline-none
+focus:border-primary
+resize-none
+"
+
+/>
+
+
+
+
+
+
+
+
+{
+mesaj &&
+
+<p
+className="
+text-primary
+font-bold
+text-center
+mb-5
+"
+>
+{mesaj}
+</p>
+
+}
+
+
+
+
+
+
+
+<button
+
+disabled={loading}
+
+className="
+w-full
+bg-primary
+text-black
+py-4
+rounded-xl
+font-black
+text-lg
+hover:bg-primary-hover
+disabled:opacity-50
+transition
+hover:scale-[1.02]
+"
+
+>
+
+{
+
+loading
+
+?
+
+"Se salvează..."
+
+:
+
+"💾 Salvează profil"
+
+}
+
+
+</button>
+
+
+
+
+
+</form>
+
 
   );
 

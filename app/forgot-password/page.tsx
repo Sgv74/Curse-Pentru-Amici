@@ -2,24 +2,29 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import Link from "next/link";
 
 
 export default function ForgotPasswordPage() {
 
 
-  const [email, setEmail] = useState("");
+  const [email,setEmail] = useState("");
 
-  const [mesaj, setMesaj] = useState("");
+  const [mesaj,setMesaj] = useState("");
 
-  const [eroare, setEroare] = useState("");
+  const [eroare,setEroare] = useState("");
 
-  const [loading, setLoading] = useState(false);
+  const [loading,setLoading] = useState(false);
+
+
+
+
 
 
 
   async function handleReset(
-    e: React.FormEvent<HTMLFormElement>
-  ) {
+    e:React.FormEvent<HTMLFormElement>
+  ){
 
     e.preventDefault();
 
@@ -30,17 +35,27 @@ export default function ForgotPasswordPage() {
 
 
 
-    const { error } = await supabase.auth.resetPasswordForEmail(
+
+    const {
+      error
+    } =
+    await supabase.auth.resetPasswordForEmail(
+
       email,
+
       {
         redirectTo:
-          "https://curseleamicilor.vercel.app/reset-password",
+        "https://curseleamicilor.vercel.app/reset-password"
       }
+
     );
 
 
 
-    if (error) {
+
+
+
+    if(error){
 
       setEroare(
         error.message
@@ -54,14 +69,25 @@ export default function ForgotPasswordPage() {
 
 
 
+
+
+
+
     setMesaj(
-      "📩 Dacă există un cont cu acest email, vei primi un link de resetare. Verifică Inbox-ul și folderul Spam."
+      "📩 Dacă există un cont cu acest email, vei primi link-ul de resetare."
     );
+
 
 
     setLoading(false);
 
+
+
   }
+
+
+
+
 
 
 
@@ -69,16 +95,41 @@ export default function ForgotPasswordPage() {
   return (
 
     <main
+
       className="
       min-h-screen
-      bg-zinc-950
+      bg-background
       text-white
       flex
       items-center
       justify-center
       px-6
+      relative
+      overflow-hidden
       "
+
     >
+
+
+
+
+      <div
+
+        className="
+        absolute
+        inset-0
+        bg-gradient-to-br
+        from-secondary/20
+        via-transparent
+        to-accent/20
+        "
+
+      />
+
+
+
+
+
 
 
       <form
@@ -86,30 +137,60 @@ export default function ForgotPasswordPage() {
         onSubmit={handleReset}
 
         className="
-        bg-zinc-900
-        border
-        border-zinc-800
-        rounded-2xl
-        p-8
+        relative
+        z-10
         w-full
         max-w-md
+        bg-surface
+        border
+        border-white/10
+        rounded-[32px]
+        p-10
+        shadow-2xl
         "
 
       >
 
 
+
+
+
         <h1
 
           className="
-          text-3xl
-          font-bold
+          text-4xl
+          font-black
           text-center
-          mb-8
           "
 
         >
+
           🔐 Resetare parolă
+
         </h1>
+
+
+
+
+
+
+        <p
+
+          className="
+          text-muted
+          text-center
+          mt-4
+          mb-10
+          "
+
+        >
+
+          Introdu email-ul contului tău
+
+        </p>
+
+
+
 
 
 
@@ -124,18 +205,21 @@ export default function ForgotPasswordPage() {
 
           value={email}
 
-          onChange={(e)=>
-            setEmail(e.target.value)
+          onChange={
+            e=>setEmail(e.target.value)
           }
 
           className="
           w-full
-          mb-6
-          p-4
+          px-5
+          py-4
           rounded-xl
           bg-black
           border
-          border-zinc-700
+          border-white/10
+          outline-none
+          focus:border-primary
+          transition
           "
 
         />
@@ -144,10 +228,22 @@ export default function ForgotPasswordPage() {
 
 
 
+
+
+
         {
           eroare &&
 
-          <p className="text-red-400 mb-4">
+          <p
+
+            className="
+            mt-5
+            text-red-400
+            font-bold
+            text-center
+            "
+
+          >
 
             {eroare}
 
@@ -159,16 +255,32 @@ export default function ForgotPasswordPage() {
 
 
 
+
+
+
         {
           mesaj &&
 
-          <p className="text-green-400 mb-4">
+          <p
+
+            className="
+            mt-5
+            text-primary
+            font-bold
+            text-center
+            "
+
+          >
 
             {mesaj}
 
           </p>
 
         }
+
+
+
+
 
 
 
@@ -181,13 +293,18 @@ export default function ForgotPasswordPage() {
           disabled={loading}
 
           className="
+          mt-6
           w-full
-          bg-green-600
-          hover:bg-green-700
-          disabled:opacity-50
-          p-4
+          py-4
           rounded-xl
-          font-bold
+          bg-primary
+          text-black
+          font-black
+          text-lg
+          hover:bg-primary-hover
+          hover:scale-[1.02]
+          transition
+          disabled:opacity-50
           "
 
         >
@@ -207,24 +324,36 @@ export default function ForgotPasswordPage() {
 
 
 
-        <p className="text-center mt-6">
 
-          <a
+
+        <div
+
+          className="
+          mt-8
+          text-center
+          "
+
+        >
+
+          <Link
 
             href="/login"
 
             className="
-            text-green-400
-            hover:underline
+            text-muted
+            hover:text-white
+            transition
             "
 
           >
 
             ← Înapoi la login
 
-          </a>
+          </Link>
 
-        </p>
+
+        </div>
+
 
 
 
@@ -232,7 +361,11 @@ export default function ForgotPasswordPage() {
       </form>
 
 
+
+
+
     </main>
+
 
   );
 

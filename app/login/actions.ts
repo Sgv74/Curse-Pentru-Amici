@@ -5,8 +5,8 @@ import { redirect } from "next/navigation";
 
 
 export async function loginAction(
-  email: string,
-  password: string
+  email:string,
+  password:string
 ) {
 
 
@@ -15,10 +15,13 @@ export async function loginAction(
 
 
 
+
+
   const {
     data,
     error
-  } =
+  }
+  =
   await supabase.auth.signInWithPassword({
 
     email,
@@ -29,22 +32,49 @@ export async function loginAction(
 
 
 
+
+
   if(error){
 
     return {
-      error: error.message
+
+      error:error.message
+
     };
 
   }
 
 
 
-  // verificăm dacă emailul a fost confirmat
 
-  if(!data.user?.email_confirmed_at){
+
+
+  const user = data.user;
+
+
+
+
+
+  if(!user){
+
+    return {
+
+      error:"Nu s-a găsit utilizatorul."
+
+    };
+
+  }
+
+
+
+
+
+
+  if(!user.email_confirmed_at){
 
 
     await supabase.auth.signOut();
+
 
 
     return {
@@ -54,7 +84,107 @@ export async function loginAction(
 
     };
 
+
   }
+
+
+
+
+
+
+
+
+
+  /*
+    VERIFICĂM PROFILUL
+  */
+
+
+  const {
+
+    data:profil
+
+  }
+  =
+  await supabase
+
+    .from("profiles")
+
+    .select("id")
+
+    .eq(
+      "id",
+      user.id
+    )
+
+    .maybeSingle();
+
+
+
+
+
+
+
+  /*
+    DACĂ NU EXISTĂ PROFIL,
+    ÎL CREĂM
+  */
+
+
+  if(!profil){
+
+
+
+    const username =
+      user.user_metadata?.username
+      ??
+      email.split("@")[0];
+
+
+
+
+
+    const {
+
+      error:profileError
+
+    }
+    =
+    await supabase
+
+      .from("profiles")
+
+      .insert({
+
+        id:user.id,
+
+        username,
+
+      });
+
+
+
+
+
+    if(profileError){
+
+
+      return {
+
+        error:
+        profileError.message
+
+      };
+
+
+    }
+
+
+  }
+
+
+
+
 
 
 

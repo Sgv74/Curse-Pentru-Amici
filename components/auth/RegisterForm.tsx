@@ -2,16 +2,10 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 
 export default function RegisterForm() {
-
-
-  
-
-  const router = useRouter();
-
 
 
   const [username,setUsername] = useState("");
@@ -33,18 +27,16 @@ export default function RegisterForm() {
 
 
 
-
   async function register(
-    e: React.FormEvent<HTMLFormElement>
+    e:React.FormEvent<HTMLFormElement>
   ){
 
     e.preventDefault();
 
 
-    setEroare("");
-
     setMesaj("");
 
+    setEroare("");
 
 
 
@@ -60,7 +52,7 @@ export default function RegisterForm() {
 
 
 
-    if(username.length < 3){
+    if(username.trim().length < 3){
 
       setEroare(
         "Username-ul trebuie să aibă minim 3 caractere."
@@ -78,26 +70,26 @@ export default function RegisterForm() {
 
 
 
-    // verificăm dacă username-ul există
 
     const {
-      data:existingUser
+      data:usernameExist
     } =
     await supabase
-    .from("profiles")
-    .select("username")
-    .eq(
-      "username",
-      username
-    )
-    .single();
+      .from("profiles")
+      .select("id")
+      .eq(
+        "username",
+        username.trim()
+      )
+      .maybeSingle();
 
 
 
-    if(existingUser){
+
+    if(usernameExist){
 
       setEroare(
-        "Acest username este deja folosit."
+        "Username deja folosit."
       );
 
       setLoading(false);
@@ -111,16 +103,37 @@ export default function RegisterForm() {
 
 
 
-    // creare cont AUTH
+
+    const {
+      error
+    } =
+    await supabase.auth.signUp({
+
+      email:email.trim(),
+
+      password,
 
 
-   const { data, error } = await supabase.auth.signUp({
-  email,
-  password,
-  options: {
-    emailRedirectTo: "http://https://curseleamicilor.vercel.app//email-confirmed",
-  },
-});
+      options:{
+
+
+        data:{
+
+          username:
+          username.trim()
+
+        },
+
+
+        emailRedirectTo:
+
+        `${window.location.origin}/email-confirmed`
+
+      }
+
+
+    });
+
 
 
 
@@ -142,70 +155,15 @@ export default function RegisterForm() {
 
 
 
-    // creare profil
-
-
-    if(data.user){
-
-
-      const {
-
-        error:profileError
-
-      } =
-
-      await supabase
-
-      .from("profiles")
-
-      .insert({
-
-        id:data.user.id,
-
-        username:username,
-
-      });
-
-
-
-
-
-      if(profileError){
-
-        setEroare(
-          profileError.message
-        );
-
-        setLoading(false);
-
-        return;
-
-      }
-
-
-    }
-
-
-
-
 
 
     setMesaj(
-  "🏁 Contul tău a fost creat! Am trimis un email de confirmare. Verifică Inbox-ul (și folderul Spam) pentru a activa contul."
-);
+      "✅ Cont creat. Verifică email-ul pentru confirmare."
+    );
 
 
 
     setLoading(false);
-
-
-
-
-    setTimeout(()=>{
-
-      router.push("/login");
-
-    },2000);
 
 
 
@@ -225,13 +183,13 @@ export default function RegisterForm() {
       onSubmit={register}
 
       className="
-      bg-zinc-900
-      border
-      border-zinc-800
-      rounded-2xl
-      p-8
       w-full
-      max-w-md
+      bg-surface
+      border
+      border-white/10
+      rounded-[32px]
+      p-10
+      shadow-2xl
       "
 
     >
@@ -241,15 +199,30 @@ export default function RegisterForm() {
       <h1
         className="
         text-4xl
-        font-bold
-        mb-8
+        font-black
         text-center
         "
       >
 
-        🏁 Creează cont
+        Creează cont
 
       </h1>
+
+
+
+
+      <p
+        className="
+        text-center
+        text-muted
+        mt-3
+        mb-10
+        "
+      >
+
+        Intră în comunitatea FH6 România
+
+      </p>
 
 
 
@@ -269,15 +242,17 @@ export default function RegisterForm() {
 
         className="
         w-full
-        mb-4
-        p-4
+        mb-5
+        px-5
+        py-4
         rounded-xl
         bg-black
         border
-        border-zinc-700
+        border-white/10
         "
 
       />
+
 
 
 
@@ -299,15 +274,18 @@ export default function RegisterForm() {
 
         className="
         w-full
-        mb-4
-        p-4
+        mb-5
+        px-5
+        py-4
         rounded-xl
         bg-black
         border
-        border-zinc-700
+        border-white/10
         "
 
       />
+
+
 
 
 
@@ -329,15 +307,19 @@ export default function RegisterForm() {
 
         className="
         w-full
-        mb-4
-        p-4
+        mb-5
+        px-5
+        py-4
         rounded-xl
         bg-black
         border
-        border-zinc-700
+        border-white/10
         "
 
       />
+
+
+
 
 
 
@@ -360,11 +342,12 @@ export default function RegisterForm() {
         className="
         w-full
         mb-6
-        p-4
+        px-5
+        py-4
         rounded-xl
         bg-black
         border
-        border-zinc-700
+        border-white/10
         "
 
       />
@@ -374,10 +357,18 @@ export default function RegisterForm() {
 
 
 
+
       {
         eroare &&
 
-        <p className="text-red-400 mb-4">
+        <p
+          className="
+          text-red-400
+          font-bold
+          text-center
+          mb-5
+          "
+        >
 
           {eroare}
 
@@ -389,11 +380,17 @@ export default function RegisterForm() {
 
 
 
-
       {
         mesaj &&
 
-        <p className="text-green-400 mb-4">
+        <p
+          className="
+          text-primary
+          font-bold
+          text-center
+          mb-5
+          "
+        >
 
           {mesaj}
 
@@ -406,19 +403,20 @@ export default function RegisterForm() {
 
 
 
+
       <button
 
         disabled={loading}
 
         className="
         w-full
-        bg-green-600
-        hover:bg-green-700
-        disabled:opacity-50
         py-4
         rounded-xl
-        font-bold
-        text-xl
+        bg-primary
+        text-black
+        font-black
+        text-lg
+        disabled:opacity-50
         "
 
       >
@@ -433,6 +431,37 @@ export default function RegisterForm() {
 
 
       </button>
+
+
+
+
+
+
+
+      <div
+        className="
+        text-center
+        mt-8
+        "
+      >
+
+        <Link
+
+          href="/login"
+
+          className="
+          text-muted
+          hover:text-white
+          "
+
+        >
+
+          Ai deja cont? Intră aici
+
+        </Link>
+
+
+      </div>
 
 
 

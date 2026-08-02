@@ -1,26 +1,82 @@
 @import "tailwindcss";
 
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+
+  --background: #07070A;
+  --foreground: #FFFFFF;
+
+
+  /* FH6 Neon Theme */
+
+  --surface: #101014;
+  --surface-light: #181820;
+
+
+  /* Brand */
+
+  --primary: #D946EF;
+  --primary-hover: #F0ABFC;
+
+
+  /* Secondary */
+
+  --secondary: #7C3AED;
+
+
+  /* Racing accent */
+
+  --accent: #06B6D4;
+
+
+  /* Muted text */
+
+  --muted: #A1A1AA;
+
 }
+
+
 
 @theme inline {
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+
+  --color-surface: var(--surface);
+  --color-surface-light: var(--surface-light);
+
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+
+
+  --color-secondary: var(--secondary);
+
+
+  --color-accent: var(--accent);
+
+
+  --color-muted: var(--muted);
+
+
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+
 
 body {
+
   background: var(--background);
+
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
 }

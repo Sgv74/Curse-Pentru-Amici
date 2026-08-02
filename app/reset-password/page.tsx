@@ -11,19 +11,19 @@ export default function ResetPasswordPage() {
   const router = useRouter();
 
 
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [password,setPassword] = useState("");
+  const [confirmPassword,setConfirmPassword] = useState("");
 
-  const [mesaj, setMesaj] = useState("");
-  const [eroare, setEroare] = useState("");
+  const [mesaj,setMesaj] = useState("");
+  const [eroare,setEroare] = useState("");
 
-  const [loading, setLoading] = useState(false);
+  const [loading,setLoading] = useState(false);
 
 
 
   async function handleUpdate(
     e: React.FormEvent<HTMLFormElement>
-  ) {
+  ){
 
     e.preventDefault();
 
@@ -59,24 +59,23 @@ export default function ResetPasswordPage() {
 
 
 
-    if (error) {
+    if(error){
 
-  setEroare(
-    "❌ Linkul de resetare a expirat sau nu mai este valid. Cere un nou link."
-  );
+      setEroare(
+        "❌ Linkul de resetare a expirat sau nu mai este valid."
+      );
 
-  setLoading(false);
+      setLoading(false);
 
-  return;
+      return;
 
-}
+    }
 
 
 
     setMesaj(
       "✅ Parola a fost schimbată cu succes!"
     );
-
 
 
     setLoading(false);
@@ -101,7 +100,7 @@ export default function ResetPasswordPage() {
     <main
       className="
       min-h-screen
-      bg-zinc-950
+      bg-background
       text-white
       flex
       items-center
@@ -116,28 +115,34 @@ export default function ResetPasswordPage() {
         onSubmit={handleUpdate}
 
         className="
-        bg-zinc-900
-        border
-        border-zinc-800
-        rounded-2xl
-        p-8
         w-full
         max-w-md
+        bg-surface
+        border
+        border-white/10
+        rounded-3xl
+        p-8
+        shadow-2xl
         "
 
       >
 
 
+
         <h1
+
           className="
-          text-3xl
-          font-bold
+          text-4xl
+          font-black
           text-center
           mb-8
           "
         >
-          🔑 Setează parola nouă
+
+          🔑 Parolă nouă
+
         </h1>
+
 
 
 
@@ -160,12 +165,16 @@ export default function ResetPasswordPage() {
           mb-4
           p-4
           rounded-xl
-          bg-black
+          bg-black/50
           border
-          border-zinc-700
+          border-white/10
+          outline-none
+          focus:border-primary
+          transition
           "
 
         />
+
 
 
 
@@ -188,19 +197,31 @@ export default function ResetPasswordPage() {
           mb-6
           p-4
           rounded-xl
-          bg-black
+          bg-black/50
           border
-          border-zinc-700
+          border-white/10
+          outline-none
+          focus:border-primary
+          transition
           "
 
         />
 
 
 
+
+
         {
           eroare &&
 
-          <p className="text-red-400 mb-4">
+          <p
+            className="
+            text-red-400
+            mb-4
+            font-bold
+            text-center
+            "
+          >
             {eroare}
           </p>
 
@@ -208,10 +229,18 @@ export default function ResetPasswordPage() {
 
 
 
+
         {
           mesaj &&
 
-          <p className="text-green-400 mb-4">
+          <p
+            className="
+            text-primary
+            mb-4
+            font-bold
+            text-center
+            "
+          >
             {mesaj}
           </p>
 
@@ -219,18 +248,26 @@ export default function ResetPasswordPage() {
 
 
 
+
+
         <button
 
           disabled={loading}
 
+          type="submit"
+
           className="
           w-full
-          bg-green-600
-          hover:bg-green-700
+          bg-primary
+          text-black
+          hover:bg-primary-hover
           disabled:opacity-50
           p-4
           rounded-xl
-          font-bold
+          font-black
+          text-lg
+          transition
+          hover:scale-[1.02]
           "
 
         >
@@ -245,6 +282,8 @@ export default function ResetPasswordPage() {
 
 
         </button>
+
+
 
 
       </form>

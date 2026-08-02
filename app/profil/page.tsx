@@ -1,54 +1,67 @@
+import Image from "next/image";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { getRank } from "@/lib/rank";
-import { redirect } from "next/navigation";
 import { stergeCursa } from "./actions";
+
+
 
 function StatCard({
   icon,
   value,
   label,
   color,
-}: {
+}:{
   icon:string;
   value:string | number;
   label:string;
   color:string;
-}) {
+}){
 
   return (
+
     <div
       className={`
-      bg-zinc-900
+      bg-surface
       border
-      border-zinc-800
-      rounded-2xl
+      border-white/10
+      rounded-3xl
       p-6
       text-center
       transition
-      hover:-translate-y-1
+      hover:-translate-y-2
+      hover:border-primary
       ${color}
       `}
     >
 
-      <div className="text-5xl mb-3">
+      <div className="text-5xl">
         {icon}
       </div>
 
-      <div className="text-4xl font-black">
+
+      <div className="mt-4 text-4xl font-black">
         {value}
       </div>
 
-      <p className="text-zinc-400 mt-2">
+
+      <p className="mt-2 text-muted">
         {label}
       </p>
 
     </div>
+
   );
+
 }
 
 
 
+
 export default async function ProfilPage(){
+
 
 const supabase =
 await createSupabaseServerClient();
@@ -56,47 +69,55 @@ await createSupabaseServerClient();
 
 
 const {
-data:{
-user
-}
+ data:{
+  user
+ }
 }=await supabase.auth.getUser();
 
 
 
 if(!user){
-redirect("/login");
+
+ redirect("/login");
+
 }
-const {
-  data: profile,
-  error: profileError,
-} = await supabase
-  .from("profiles")
-  .select("*")
-  .eq("id", user.id)
-  .single();
-
-console.log(profile);
-console.log(profileError);
 
 
 
 
-// =======================
-// CURSE USER
-// =======================
 
 const {
-  data: curse,
-  error: curseError,
-} = await supabase
-  .from("races")
-  .select("*")
-  .eq("user_id", user.id)
-  .order("created_at", {
-    ascending: false,
-  });
+ data:profile
+}=await supabase
+.from("profiles")
+.select("*")
+.eq(
+ "id",
+ user.id
+)
+.single();
 
-console.log(curseError);
+
+
+
+
+const {
+ data:curse
+}=await supabase
+.from("races")
+.select("*")
+.eq(
+ "user_id",
+ user.id
+)
+.order(
+ "created_at",
+ {
+  ascending:false
+ }
+);
+
+
 
 
 
@@ -107,16 +128,15 @@ curse?.length ?? 0;
 
 const ids =
 curse?.map(
-race=>race.id
+c=>c.id
 ) ?? [];
 
 
 
+let totalReviews = 0;
+let totalFavorites = 0;
+let averageRating = 0;
 
-
-let totalReviews=0;
-let totalFavorites=0;
-let averageRating=0;
 
 
 
@@ -124,7 +144,7 @@ if(ids.length){
 
 
 const {
-data:votes
+ data:votes
 }=await supabase
 .from("race_votes")
 .select("rating")
@@ -144,8 +164,7 @@ if(votes?.length){
 
 averageRating =
 votes.reduce(
-(sum,vote)=>
-sum + vote.rating,
+(a,b)=>a+b.rating,
 0
 )
 /votes.length;
@@ -154,14 +173,15 @@ sum + vote.rating,
 
 
 
+
 const {
-count
+ count
 }=await supabase
 .from("favorites")
 .select("*",
 {
-count:"exact",
-head:true
+ count:"exact",
+ head:true
 })
 .in(
 "race_id",
@@ -175,6 +195,7 @@ count ?? 0;
 
 
 }
+
 
 
 
@@ -193,7 +214,7 @@ progress===0
 ?
 10
 :
-10 - Math.floor(progress/10);
+10-Math.floor(progress/10);
 
 
 
@@ -204,71 +225,146 @@ return (
 <main
 className="
 min-h-screen
-bg-zinc-950
+bg-background
 text-white
-px-5
-py-16
+px-6
+py-20
 "
 >
 
 
 <div
 className="
-max-w-6xl
+max-w-7xl
 mx-auto
 "
 >
 
 
+
+
 <h1
 className="
 text-5xl
+md:text-6xl
 font-black
+mb-12
 "
 >
-👋 Profilul meu
+👤 Profilul meu
 </h1>
+
+
+
+
+
+
+<section
+className="
+bg-surface
+border
+border-white/10
+rounded-[40px]
+p-8
+md:p-10
+relative
+overflow-hidden
+"
+>
+
+<div
+className="
+absolute
+inset-0
+bg-gradient-to-r
+from-primary/10
+via-transparent
+to-accent/10
+"
+/>
+
+
+<div
+className="
+relative
+flex
+flex-col
+md:flex-row
+items-center
+gap-8
+"
+>
+
+
+<div
+className="
+relative
+"
+>
+
+<div
+className="
+absolute
+inset-0
+rounded-full
+bg-primary
+blur-2xl
+opacity-30
+"
+/>
+
+
+<Image
+
+src={
+profile?.avatar_url ||
+"/default-avatar.png"
+}
+
+alt="Avatar"
+
+width={120}
+
+height={120}
+
+className="
+relative
+rounded-full
+border-4
+border-primary
+object-cover
+"
+/>
+
+
+</div>
+
+
 
 
 
 <div
 className="
-bg-zinc-900
-border
-border-zinc-800
-rounded-3xl
-p-8
-mb-10
-flex
-items-center
-gap-6
+text-center
+md:text-left
 "
 >
 
 
-<img
-src={
-profile?.avatar_url ||
-"/default-avatar.png"
-}
-alt="Avatar"
+<div
 className="
-w-28
-h-28
-rounded-full
-object-cover
-border-4
-border-zinc-700
+flex
+flex-col
+md:flex-row
+md:items-center
+gap-3
 "
-/>
+>
 
-
-
-<div>
 
 <h2
 className="
-text-3xl
+text-4xl
 font-black
 "
 >
@@ -276,10 +372,31 @@ font-black
 </h2>
 
 
+
+<span
+className={`
+px-4
+py-1
+rounded-full
+bg-black/40
+font-bold
+${rank.color}
+`}
+>
+{rank.title}
+</span>
+
+
+</div>
+
+
+
+
 <p
 className="
-text-zinc-400
-mt-2
+mt-4
+text-muted
+max-w-xl
 "
 >
 {
@@ -289,48 +406,68 @@ profile?.bio ||
 </p>
 
 
+
+
 <p
 className="
-text-zinc-500
 mt-3
 text-sm
+text-zinc-500
 "
 >
 {user.email}
 </p>
 
-<a
+
+
+
+<Link
+
 href="/profil/edit"
+
 className="
-bg-green-600
-hover:bg-green-500
-px-5
+inline-flex
+mt-6
+bg-primary
+text-black
+px-6
 py-3
 rounded-xl
-font-bold
-mt-4
-inline-block
+font-black
+hover:bg-primary-hover
+transition
 "
 >
+
 ✏️ Editează profil
-</a>
+
+</Link>
+
+
+
 </div>
 
 
 </div>
 
 
+</section>
 
 
 
-<div
+
+
+
+
+
+
+<section
 className="
 grid
-grid-cols-1
 sm:grid-cols-2
 lg:grid-cols-4
-gap-5
-mb-10
+gap-6
+mt-10
 "
 >
 
@@ -339,16 +476,18 @@ mb-10
 icon="🏁"
 value={totalCurse}
 label="Curse create"
-color="hover:border-green-500"
+color="hover:border-primary"
 />
+
 
 
 <StatCard
 icon="⭐"
 value={averageRating.toFixed(1)}
 label="Rating mediu"
-color="hover:border-yellow-500"
+color="hover:border-accent"
 />
+
 
 
 <StatCard
@@ -359,87 +498,18 @@ color="hover:border-pink-500"
 />
 
 
+
 <StatCard
 icon="💬"
 value={totalReviews}
 label="Review-uri"
-color="hover:border-cyan-500"
+color="hover:border-cyan-400"
 />
 
 
-</div>
 
+</section>
 
-
-
-
-
-
-<div
-className="
-bg-zinc-900
-border
-border-zinc-800
-rounded-3xl
-p-8
-mb-8
-"
->
-
-
-<p className="text-zinc-400">
-Rang comunitate
-</p>
-
-
-<h2
-className={`
-text-4xl
-font-black
-mt-2
-${rank.color}
-`}
->
-{rank.title}
-</h2>
-
-
-<p className="mt-3 text-zinc-300">
-🏁 {totalCurse} curse încărcate
-</p>
-
-
-
-<div
-className="
-h-3
-bg-zinc-800
-rounded-full
-overflow-hidden
-mt-6
-"
->
-
-<div
-className="
-h-full
-bg-green-500
-"
-style={{
-width:`${progress}%`
-}}
-/>
-
-</div>
-
-
-
-<p className="text-zinc-400 mt-3 text-sm">
-Încă {remaining} curse până la următorul rang.
-</p>
-
-
-</div>
 
 
 
@@ -449,13 +519,103 @@ width:`${progress}%`
 
 <section
 className="
-bg-zinc-900
+mt-10
+bg-surface
 border
-border-zinc-800
-rounded-3xl
+border-white/10
+rounded-[40px]
 p-8
 "
 >
+
+
+
+<p className="text-muted">
+Rang comunitate
+</p>
+
+
+<h2
+className={`
+text-5xl
+font-black
+mt-3
+${rank.color}
+`}
+>
+{rank.title}
+</h2>
+
+
+
+<p className="mt-4 text-zinc-300">
+🏁 {totalCurse} curse încărcate
+</p>
+
+
+
+
+
+<div
+className="
+mt-8
+h-4
+bg-black/50
+rounded-full
+overflow-hidden
+"
+>
+
+
+<div
+className="
+h-full
+bg-gradient-to-r
+from-primary
+to-accent
+"
+style={{
+width:`${progress}%`
+}}
+/>
+
+
+</div>
+
+
+
+<p
+className="
+mt-4
+text-muted
+"
+>
+Încă {remaining} curse până la următorul rang.
+</p>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<section
+className="
+mt-10
+bg-surface
+border
+border-white/10
+rounded-[40px]
+p-8
+"
+>
+
 
 
 <div
@@ -468,24 +628,34 @@ mb-8
 >
 
 
-<h2 className="text-3xl font-black">
+<h2
+className="
+text-3xl
+font-black
+"
+>
 🏁 Cursele mele
 </h2>
 
 
-<a
+
+<Link
+
 href="/adauga"
+
 className="
-bg-green-600
-hover:bg-green-500
+bg-primary
+text-black
 px-5
 py-3
 rounded-xl
-font-bold
+font-black
 "
 >
+
 ➕ Adaugă
-</a>
+
+</Link>
 
 
 </div>
@@ -497,68 +667,162 @@ font-bold
 
 
 {
-curse && curse.length > 0 ? (
+curse && curse.length ?
 
+(
 
 <div
 className="
 grid
 md:grid-cols-2
-gap-6
+gap-8
 "
 >
 
 
 {
+
 curse.map((cursa)=>(
 
 
 <div
+
 key={cursa.id}
+
 className="
-bg-zinc-800
-border
-border-zinc-700
-rounded-2xl
+group
 overflow-hidden
+rounded-3xl
+bg-surface
+border
+border-white/10
+hover:border-primary
+hover:-translate-y-2
+transition
+duration-300
 "
+
 >
 
 
-<img
-src={cursa.image_url}
-alt={cursa.title}
+<div
 className="
-w-full
-h-48
+relative
+h-60
+"
+>
+
+<Image
+
+src={
+cursa.image_url ||
+"/placeholder-race.jpg"
+}
+
+alt={cursa.title}
+
+fill
+
+className="
 object-cover
+group-hover:scale-110
+transition
+duration-500
+"
+
+/>
+
+
+<div
+className="
+absolute
+inset-0
+bg-gradient-to-t
+from-black
+via-black/30
+to-transparent
 "
 />
 
 
 
-<div className="p-6">
+<div
+className="
+absolute
+bottom-5
+left-5
+"
+>
+
+<p
+className="
+text-primary
+uppercase
+text-xs
+font-black
+tracking-widest
+"
+>
+{cursa.category}
+</p>
 
 
-<h3 className="text-2xl font-black">
+<h3
+className="
+text-3xl
+font-black
+mt-2
+"
+>
 {cursa.title}
 </h3>
 
 
+</div>
 
-<div className="text-zinc-400 mt-3 space-y-1">
+
+</div>
+
+
+
+
+
+<div
+className="
+p-6
+"
+>
+
+
+
+<div
+className="
+grid
+grid-cols-2
+gap-3
+text-muted
+"
+>
 
 <p>
-🏎️ {cursa.car}
+🚗 {cursa.car}
 </p>
 
-<p>
-🏁 Clasa {cursa.class}
-</p>
 
 <p>
-🔑 {cursa.share_code}
+🔥 {cursa.class}
 </p>
+
+
+<p>
+⏱️ {cursa.duration}
+</p>
+
+
+<p>
+🏆 {cursa.score}
+</p>
+
 
 </div>
 
@@ -567,112 +831,158 @@ object-cover
 
 <div
 className="
+mt-6
 flex
 gap-3
-mt-6
 "
 >
 
 
-<a
+<Link
+
 href={`/cursa/${cursa.id}`}
+
 className="
-bg-green-600
-px-4
-py-2
-rounded-lg
-font-bold
+flex-1
+text-center
+bg-accent
+text-black
+py-3
+rounded-xl
+font-black
+hover:scale-105
+transition
 "
 >
+
 Vezi
-</a>
+
+</Link>
 
 
 
-<a
+
+<Link
+
 href={`/editeaza/${cursa.id}`}
+
 className="
-bg-yellow-600
-px-4
-py-2
-rounded-lg
-font-bold
+flex-1
+text-center
+bg-primary
+text-black
+py-3
+rounded-xl
+font-black
+hover:scale-105
+transition
 "
 >
-✏️ Editează
-</a>
+
+Edit
+
+</Link>
+
 
 
 
 <form
-action={stergeCursa.bind(null,cursa.id)}
+action={
+stergeCursa.bind(
+null,
+cursa.id
+)
+}
 >
 
+
 <button
+
 className="
-bg-red-600
-hover:bg-red-500
 px-4
-py-2
-rounded-lg
-font-bold
+rounded-xl
+bg-red-500/20
+border
+border-red-500/40
+text-red-400
+font-black
+hover:bg-red-500
+hover:text-white
+transition
 "
+
 >
-🗑️ Șterge
+
+🗑️
+
 </button>
+
 
 </form>
 
 
+
 </div>
 
 
+
 </div>
+
 
 
 </div>
 
 
 ))
+
 }
 
 
 </div>
 
-
 )
 
 :
 
+(
 
 <div
 className="
-border-2
+border
 border-dashed
-border-zinc-700
-rounded-2xl
-p-10
+border-white/20
+rounded-3xl
+p-12
 text-center
 "
 >
 
+
 <div className="text-6xl">
-🚗
+🏎️
 </div>
 
 
-<h3 className="text-2xl font-bold mt-4">
+<h3
+className="
+text-3xl
+font-black
+mt-5
+"
+>
 Nu ai curse încă
 </h3>
 
 
-<p className="text-zinc-400 mt-3">
-Adaugă prima ta cursă.
+<p className="mt-3 text-muted">
+Publică prima ta creație EventLab.
 </p>
+
 
 
 </div>
 
+)
 
 }
 
@@ -682,10 +992,14 @@ Adaugă prima ta cursă.
 
 
 
+
+
+
 </div>
 
 </main>
 
 );
+
 
 }

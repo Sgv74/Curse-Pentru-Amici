@@ -1,201 +1,339 @@
+import Image from "next/image";
 import Link from "next/link";
 
 
 type Race = {
+
   id:number;
+
   title:string;
+
   image_url:string;
+
   category:string;
+
   car:string;
-  score:number;
+
+  score:string | number;
+
+  gallery?:string[];
+
 };
 
 
 
+
+
 export default function RaceSuggestions({
+
   races,
+
 }:{
+
   races:Race[];
+
 }){
 
 
   if(!races || races.length === 0){
+
     return null;
+
   }
+
+
 
 
 
   return (
 
-    <section
-      className="
-      mt-16
-      "
-    >
+<section
 
+className="
+mt-16
+"
 
+>
 
-      <h2
-        className="
-        text-3xl
-        font-black
-        mb-8
-        "
-      >
 
-        🏁 Poate îți vor plăcea și...
 
-      </h2>
+<h2
 
+className="
+text-3xl
+font-black
+mb-8
+"
 
+>
 
+🏁 Poate îți vor plăcea și...
 
+</h2>
 
-      <div
-        className="
-        grid
-        sm:grid-cols-2
-        lg:grid-cols-4
-        gap-6
-        "
-      >
 
 
 
-        {
-          races.slice(0,4).map((race)=>(
 
 
-            <Link
 
-              key={race.id}
+<div
 
-              href={`/cursa/${race.id}`}
+className="
+grid
+sm:grid-cols-2
+lg:grid-cols-4
+gap-6
+"
 
-              className="
-              group
-              bg-zinc-900
-              border
-              border-zinc-800
-              rounded-2xl
-              overflow-hidden
-              hover:border-green-500
-              transition
-              "
+>
 
-            >
 
 
+{
 
-              <div
-                className="
-                overflow-hidden
-                "
-              >
+races.slice(0,4).map((race)=>(
 
-                <img
 
-                  src={race.image_url}
+<Link
 
-                  alt={race.title}
 
-                  className="
-                  w-full
-                  h-44
-                  object-cover
-                  group-hover:scale-105
-                  transition
-                  "
+key={race.id}
 
-                />
 
-              </div>
+href={`/cursa/${race.id}`}
 
 
+className="
+group
+overflow-hidden
+rounded-3xl
+bg-surface
+border
+border-white/10
+hover:border-primary
+hover:-translate-y-2
+transition-all
+duration-300
+"
 
 
+>
 
-              <div
-                className="
-                p-5
-                "
-              >
 
 
+<div
 
-                <h3
-                  className="
-                  text-xl
-                  font-black
-                  line-clamp-2
-                  "
-                >
+className="
+relative
+h-44
+overflow-hidden
+"
 
-                  {race.title}
+>
 
-                </h3>
 
 
+<Image
 
 
+src={
 
-                <p
-                  className="
-                  text-zinc-400
-                  mt-3
-                  "
-                >
+race.image_url ||
 
-                  📂 {race.category}
+"/placeholder-race.png"
 
-                </p>
+}
 
 
+alt={race.title}
 
-                <p
-                  className="
-                  text-zinc-400
-                  "
-                >
 
-                  🚗 {race.car}
+fill
 
-                </p>
 
+sizes="
+(max-width:640px) 100vw,
+(max-width:1024px) 50vw,
+25vw
+"
 
 
+className="
+object-cover
+group-hover:scale-110
+transition
+duration-500
+"
 
-                <p
-                  className="
-                  text-green-400
-                  font-bold
-                  mt-4
-                  "
-                >
 
-                  🏆 {race.score}
+/>
 
-                </p>
 
 
 
-              </div>
 
+<div
 
+className="
+absolute
+inset-0
+bg-gradient-to-t
+from-black/80
+via-transparent
+to-transparent
+"
 
+/>
 
-            </Link>
 
 
-          ))
-        }
 
 
 
-      </div>
+{
 
+race.gallery &&
+race.gallery.length > 0 &&
 
-    </section>
+
+<div
+
+className="
+absolute
+top-3
+right-3
+bg-black/70
+backdrop-blur
+px-3
+py-1
+rounded-full
+text-xs
+font-bold
+"
+
+>
+
+📸 {race.gallery.length + 1}
+
+</div>
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div
+
+className="
+p-5
+"
+
+>
+
+
+
+<h3
+
+className="
+text-xl
+font-black
+line-clamp-2
+"
+
+>
+
+{race.title}
+
+</h3>
+
+
+
+
+
+
+
+<div
+
+className="
+mt-4
+space-y-1
+text-zinc-400
+"
+
+>
+
+
+<p>
+📂 {race.category}
+</p>
+
+
+<p>
+🚗 {race.car}
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+<p
+
+className="
+mt-5
+text-primary
+font-black
+text-lg
+"
+
+>
+
+🏆 {race.score}
+
+</p>
+
+
+
+
+
+</div>
+
+
+
+
+
+</Link>
+
+
+))
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+</section>
 
   );
 

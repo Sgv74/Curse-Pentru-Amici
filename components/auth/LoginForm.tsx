@@ -1,9 +1,8 @@
 "use client";
 
-
 import { useState } from "react";
-import { loginAction } from "../../app/login/actions";
-
+import { loginAction } from "@/app/login/actions";
+import Link from "next/link";
 
 
 export default function LoginForm() {
@@ -21,41 +20,30 @@ export default function LoginForm() {
 
 
 
-
-
   async function handleLogin(
     e: React.FormEvent<HTMLFormElement>
-  ) {
-
+  ){
 
     e.preventDefault();
 
-
     setLoading(true);
-
     setError("");
 
 
 
-    const result = await loginAction(
-      email,
-      password
-    );
-
-
-
-    
-
+    const result =
+      await loginAction(
+        email,
+        password
+      );
 
 
 
     if(result?.error){
 
-
       setError(
         result.error
       );
-
 
       setLoading(false);
 
@@ -64,10 +52,7 @@ export default function LoginForm() {
     }
 
 
-
-
-
-
+    setLoading(false);
 
   }
 
@@ -76,45 +61,53 @@ export default function LoginForm() {
 
 
 
-
   return (
-
 
     <form
 
       onSubmit={handleLogin}
 
       className="
-      bg-zinc-900
-      border
-      border-zinc-800
-      rounded-2xl
-      p-8
       w-full
       max-w-md
+      bg-surface
+      border
+      border-white/10
+      rounded-[32px]
+      p-10
+      shadow-2xl
       "
 
     >
 
 
 
-
-
       <h1
-
         className="
-        text-4xl
-        font-bold
-        mb-8
+        text-5xl
+        font-black
         text-center
         "
-
       >
 
         🏁 Login
 
       </h1>
 
+
+
+      <p
+        className="
+        mt-3
+        mb-10
+        text-center
+        text-muted
+        "
+      >
+
+        Intră în comunitatea FH6 România
+
+      </p>
 
 
 
@@ -130,23 +123,25 @@ export default function LoginForm() {
 
         value={email}
 
-        onChange={(e)=>
-          setEmail(e.target.value)
+        onChange={
+          e=>setEmail(e.target.value)
         }
 
         className="
         w-full
-        mb-4
-        p-4
+        mb-5
+        px-5
+        py-4
         rounded-xl
         bg-black
         border
-        border-zinc-700
+        border-white/10
+        outline-none
+        focus:border-primary
+        transition
         "
 
       />
-
-
 
 
 
@@ -162,18 +157,22 @@ export default function LoginForm() {
 
         value={password}
 
-        onChange={(e)=>
-          setPassword(e.target.value)
+        onChange={
+          e=>setPassword(e.target.value)
         }
 
         className="
         w-full
         mb-6
-        p-4
+        px-5
+        py-4
         rounded-xl
         bg-black
         border
-        border-zinc-700
+        border-white/10
+        outline-none
+        focus:border-primary
+        transition
         "
 
       />
@@ -185,17 +184,22 @@ export default function LoginForm() {
 
 
       {
-        error && (
+        error &&
 
-          <p className="text-red-400 mb-4">
+        <p
+          className="
+          mb-5
+          text-red-400
+          text-center
+          font-bold
+          "
+        >
 
-            {error}
+          {error}
 
-          </p>
+        </p>
 
-        )
       }
-
 
 
 
@@ -205,18 +209,22 @@ export default function LoginForm() {
 
       <button
 
-        disabled={loading}
-
         type="submit"
+
+        disabled={loading}
 
         className="
         w-full
-        bg-green-600
-        hover:bg-green-700
-        disabled:opacity-50
-        p-4
+        py-4
         rounded-xl
-        font-bold
+        bg-primary
+        text-black
+        font-black
+        text-lg
+        hover:bg-primary-hover
+        hover:scale-[1.02]
+        transition
+        disabled:opacity-50
         "
 
       >
@@ -229,22 +237,70 @@ export default function LoginForm() {
           "Intră în cont"
         }
 
-
       </button>
 
-<p className="text-center mt-4">
-  <a
-    href="/forgot-password"
-    className="text-green-400 hover:underline"
-  >
-    Ai uitat parola?
-  </a>
-</p>
+
+
+
+
+
+
+      <div
+        className="
+        mt-8
+        text-center
+        space-y-3
+        "
+      >
+
+
+        <Link
+
+          href="/forgot-password"
+
+          className="
+          block
+          text-primary
+          font-bold
+          hover:text-primary-hover
+          transition
+          "
+
+        >
+
+          Ai uitat parola?
+
+        </Link>
+
+
+
+
+
+        <Link
+
+          href="/register"
+
+          className="
+          block
+          text-muted
+          hover:text-white
+          transition
+          "
+
+        >
+
+          Nu ai cont? Creează unul
+
+        </Link>
+
+
+
+      </div>
+
 
 
 
     </form>
-
 
   );
 

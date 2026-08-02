@@ -2,42 +2,49 @@ type Props = {
   category: string;
   car: string;
   raceClass: string;
-  score: number;
+  score: string | number;
   duration: string;
   createdAt: string;
 };
 
 
 export default function RaceDetails({
+
   category,
   car,
   raceClass,
   score,
   duration,
   createdAt,
+
 }: Props) {
 
 
   return (
 
     <section
+
       className="
-      mt-10
-      bg-zinc-900
+      rounded-3xl
+      bg-surface
       border
-      border-zinc-800
-      rounded-2xl
+      border-white/10
       p-6
+      md:p-8
       "
+
     >
 
 
       <h2
+
         className="
         text-2xl
+        md:text-3xl
         font-black
-        mb-6
+        mb-8
         "
+
       >
 
         📋 Detalii cursă
@@ -47,14 +54,17 @@ export default function RaceDetails({
 
 
 
+
       <div
+
         className="
         grid
         grid-cols-1
         sm:grid-cols-2
         lg:grid-cols-3
-        gap-4
+        gap-5
         "
+
       >
 
 
@@ -114,34 +124,48 @@ export default function RaceDetails({
 
 
 function Info({
+
   icon,
+
   label,
+
   value,
+
 }: {
+
   icon:string;
+
   label:string;
+
   value:string | number;
+
 }) {
 
 
   return (
 
     <div
+
       className="
-      bg-black
-      rounded-xl
-      p-4
+      rounded-2xl
+      p-5
       border
-      border-zinc-800
+      border-white/10
+      bg-background/50
+      hover:border-accent/40
+      transition
       "
+
     >
 
 
       <div
+
         className="
         text-3xl
-        mb-2
+        mb-4
         "
+
       >
 
         {icon}
@@ -150,11 +174,17 @@ function Info({
 
 
 
+
       <p
+
         className="
-        text-zinc-500
+        text-muted
         text-sm
+        uppercase
+        tracking-wider
+        font-bold
         "
+
       >
 
         {label}
@@ -163,12 +193,16 @@ function Info({
 
 
 
+
       <p
+
         className="
-        text-lg
+        mt-2
+        text-xl
         font-black
-        mt-1
+        text-white
         "
+
       >
 
         {value}

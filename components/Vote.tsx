@@ -7,11 +7,11 @@ import { useRouter } from "next/navigation";
 
 type Props = {
 
-  raceId: number;
+  raceId:number;
 
-  initialRating: number | null;
+  initialRating:number | null;
 
-  initialComment?: string | null;
+  initialComment?:string | null;
 
 };
 
@@ -25,10 +25,12 @@ export default function Vote({
 
   initialComment = "",
 
-}: Props) {
+}:Props){
+
 
 
   const router = useRouter();
+
 
 
   const [rating,setRating] =
@@ -37,18 +39,22 @@ export default function Vote({
     );
 
 
-  const [comment, setComment] =
-  useState<string>(
-    initialComment ?? ""
-  );
+
+  const [comment,setComment] =
+    useState(
+      initialComment ?? ""
+    );
+
 
 
   const [hover,setHover] =
     useState<number | null>(null);
 
 
+
   const [loading,setLoading] =
     useState(false);
+
 
 
   const [mesaj,setMesaj] =
@@ -61,14 +67,18 @@ export default function Vote({
   async function salveazaReview(){
 
 
+
     if(loading) return;
 
 
-    if(!rating){
+
+    if(rating === null){
+
 
       setMesaj(
         "⭐ Alege o notă înainte."
       );
+
 
       return;
 
@@ -76,9 +86,14 @@ export default function Vote({
 
 
 
+
+
     setLoading(true);
 
     setMesaj("");
+
+
+
 
 
 
@@ -93,6 +108,7 @@ export default function Vote({
 
 
 
+
     if(!user){
 
 
@@ -100,11 +116,25 @@ export default function Vote({
         "❌ Trebuie să fii logat."
       );
 
+
       setLoading(false);
+
 
       return;
 
+
     }
+
+
+
+
+
+
+
+    const textComentariu =
+      comment.trim();
+
+
 
 
 
@@ -119,13 +149,14 @@ export default function Vote({
 
         {
 
-          race_id: raceId,
+          race_id:raceId,
 
           user_id:user.id,
 
-          rating:rating,
+          rating,
 
-          comment:comment,
+          comment:
+            textComentariu || null,
 
         },
 
@@ -143,34 +174,54 @@ export default function Vote({
 
 
 
+
+
     if(error){
 
+
       console.log(error);
+
 
       setMesaj(
         "❌ Eroare la salvare."
       );
 
 
-    } else {
+      setLoading(false);
 
 
-      setMesaj(
-        "✅ Review salvat!"
-      );
-
-
-      router.refresh();
+      return;
 
 
     }
 
 
 
+
+
+
+
+    setMesaj(
+      "✅ Review salvat!"
+    );
+
+
+
+    setRating(rating);
+
+
+
+    router.refresh();
+
+
+
     setLoading(false);
 
 
+
   }
+
+
 
 
 
@@ -183,42 +234,63 @@ export default function Vote({
 
 
 
+
+
+
+
   return (
 
-    <div
+
+    <section
+
       className="
-      mt-10
-      bg-black
-      rounded-2xl
+      rounded-3xl
+      bg-surface
+      border
+      border-white/10
       p-6
+      md:p-8
       "
+
     >
 
 
+
+
+
       <h2
-className="
-text-3xl
-font-black
-mb-6
-"
->
-⭐ Lasă un review
-</h2>
+
+        className="
+        text-3xl
+        font-black
+        mb-8
+        "
+
+      >
+
+        ⭐ Lasă un review
+
+      </h2>
+
+
 
 
 
 
 
       <div
+
         className="
         flex
         gap-3
-        mb-6
+        mb-8
         "
+
       >
 
 
         {
+
           [1,2,3,4,5].map((nota)=>(
 
 
@@ -226,15 +298,20 @@ mb-6
 
               key={nota}
 
+              type="button"
+
               disabled={loading}
+
 
               onMouseEnter={()=>
                 setHover(nota)
               }
 
+
               onMouseLeave={()=>
                 setHover(null)
               }
+
 
               onClick={()=>
                 setRating(nota)
@@ -245,12 +322,13 @@ mb-6
               text-5xl
               hover:scale-125
               transition
+              duration-200
               "
 
             >
 
-              {
 
+              {
                 afisat &&
                 nota <= afisat
 
@@ -280,9 +358,16 @@ mb-6
 
 
 
+
+
       <textarea
 
+
         value={comment}
+
+
+        maxLength={1000}
+
 
         onChange={(e)=>
           setComment(
@@ -291,19 +376,25 @@ mb-6
         }
 
 
-        placeholder="Scrie un comentariu (opțional)..."
+        placeholder="Spune comunității ce părere ai despre cursă..."
+
 
         className="
         w-full
-        h-32
-        bg-zinc-900
+        h-36
+        rounded-2xl
+        bg-background
         border
-        border-zinc-700
-        rounded-xl
-        p-4
+        border-white/10
+        p-5
         text-white
+        placeholder:text-zinc-500
         resize-none
+        focus:outline-none
+        focus:border-primary
+        transition
         "
+
 
       />
 
@@ -312,32 +403,47 @@ mb-6
 
 
 
+
+
       <button
+
 
         onClick={salveazaReview}
 
+
         disabled={loading}
 
+
         className="
-        mt-5
-        bg-green-600
-        hover:bg-green-700
-        px-6
+        mt-6
+        px-8
         py-3
         rounded-xl
-        font-bold
+        font-black
+        bg-primary
+        hover:opacity-90
+        transition
+        disabled:opacity-50
         "
+
 
       >
 
+
         {
+
           loading
+
           ?
+
           "Se salvează..."
+
           :
+
           "Trimite review"
 
         }
+
 
       </button>
 
@@ -346,26 +452,35 @@ mb-6
 
 
 
+
       {
+
         mesaj &&
 
+
         <p
+
           className="
-          mt-4
-          text-green-400
+          mt-5
           font-bold
+          text-accent
           "
+
         >
 
           {mesaj}
 
         </p>
 
+
       }
 
 
 
-    </div>
+
+
+    </section>
+
 
   );
 
