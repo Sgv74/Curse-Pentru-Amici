@@ -32,7 +32,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
 
-  title: "Cursele Amicilor",
+  title: "FH6 România",
 
   description:
     "Curse Forza Horizon create de comunitate",
