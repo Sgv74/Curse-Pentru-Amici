@@ -161,7 +161,7 @@ export default function ForgotPasswordPage() {
             disabled:opacity-50
           "
         >
-          {loading ? "Se trimite..." : "Trimite link de resetare"}
+          {loading ? "Se trimite..." : "TEST RESET"}
         </button>
 
         <div className="mt-8 text-center">
