@@ -20,7 +20,7 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "https://fh6romania.vercel.app/reset-password",
+      redirectTo: "https://google.com",
     });
 
     if (error) {
